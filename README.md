@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -57,3 +58,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=======
+# cms-system
+A CMS system is a web-based platform that allows users to create, manage, and modify digital content without needing advanced technical knowledge. It provides tools for content editing, media management, user roles, and publishing workflows, making website management simple, fast, and efficient for individuals and businesses.
+>>>>>>> d12127d6178f4bf567356adfc447444f9a7f2117
