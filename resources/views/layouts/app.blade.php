@@ -38,8 +38,10 @@
     <script src="{{ asset('js/home.js') }}"></script>
     {{-- <script src="{{ asset('js/signin.js') }}"></script> --}}
     {{-- <script src="{{ asset('js/signup.js') }}"></script> --}}
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
     <script src="{{ asset('js/create.js') }}"></script>
     <script src="{{ asset('js/pricing.js') }}"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script> --}}
 </body>
 </html>

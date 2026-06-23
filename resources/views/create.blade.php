@@ -17,9 +17,14 @@
     </div>
 
     <!-- ════ FORM ════ -->
-    <form action="/blog/store" method="POST" enctype="multipart/form-data" id="blogForm" novalidate>
-      <!-- If using Laravel: @csrf -->
-      <input type="hidden" name="_token" value="csrf-token-here"/>
+    {{-- <form action="{{ route('blog.store') }}" method="POST" enctype="multipart/form-data" id="blogForm" novalidate> --}}
+      <form action="{{ route('blog.store') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="blogForm"
+      novalidate>
+      @csrf
+      {{-- <input type="hidden" name="_token" value="csrf-token-here"/> --}}
 
       <div class="form-layout">
 
@@ -46,7 +51,9 @@
                   <span class="input-icon">
                     <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
                   </span>
-                  <input type="text" id="title" name="title" placeholder="e.g. 10 Tips for Better Content Strategy" maxlength="100" oninput="updateCharCount('title','title-count',100)"/>
+                  <input type="text" id="title" name="title" placeholder="e.g. 10 Tips for Better Content Strategy" maxlength="100"
+  oninput="updateCharCount('title','title-count',100); autoSlug();"/>
+                  {{-- <input type="text" id="title" name="title" placeholder="e.g. 10 Tips for Better Content Strategy" maxlength="100" oninput="updateCharCount('title','title-count',100)"/> --}}
                 </div>
                 <div class="char-counter" id="title-count">0 / 100</div>
               </div>
@@ -223,7 +230,7 @@
 </div>
 
 <!-- CKEditor 5 -->
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+{{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
 <style>
     .ck-editor__editable {
@@ -252,7 +259,8 @@
         .catch(error => {
             console.error(error);
         });
-</script>
+</script> --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
           <!-- CARD 4: Gallery Images -->
           <div class="form-card">
@@ -530,7 +538,5 @@
   <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toastMsg">Draft saved!</span>
 </div>
-
-
 
 @endsection

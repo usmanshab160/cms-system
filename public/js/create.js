@@ -1,236 +1,254 @@
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+// ⛔ YEH LINE FILE KE SHURU SE DELETE KARO (yeh .js file mein invalid hai):
+// <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
-let editorInstance = null;
-let galleryFiles = [];
-let hasImage = false;
-let tags = ['CMS'];
+(() => {
 
-/* ── CKEditor init ── */
-ClassicEditor
-  .create(document.querySelector('#editor'), {
-    toolbar: ['heading','|','bold','italic','underline','strikethrough','|','bulletedList','numberedList','|','link','blockQuote','insertTable','|','imageUpload','mediaEmbed','|','undo','redo']
-  })
-  .then(editor => {
-    editorInstance = editor;
-    editor.model.document.on('change:data', () => {
-      const text = editor.getData().replace(/<[^>]+>/g,'');
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      document.getElementById('wordCountBadge').textContent = words + ' word' + (words !== 1 ? 's' : '');
-      const mins = Math.max(1, Math.ceil(words / 200));
-      document.getElementById('readTimeCalc').textContent = '~' + mins + ' min read';
-      document.getElementById('read_time').value = mins;
-      updateSeo();
-      updateChecklist();
-    });
-  })
-  .catch(console.error);
+    let editorInstance = null;
+    let galleryFiles = [];
+    let hasImage = false;
 
-/* ── Char counter ── */
-function updateCharCount(inputId, counterId, max) {
-  const v = document.getElementById(inputId).value.length;
-  const el = document.getElementById(counterId);
-  el.textContent = v + ' / ' + max;
-  el.className = 'char-counter' + (v > max * 0.9 ? ' warn' : '') + (v >= max ? ' over' : '');
-  if (inputId === 'title') autoSlug();
-  updateSeo();
-  updateChecklist();
-}
+    /* ───────────────── CKEditor ───────────────── */
+    ClassicEditor.create(document.querySelector('#editor'), {
+        toolbar: [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'bulletedList', 'numberedList', '|',
+            'link', 'blockQuote', 'insertTable', '|',
+            'mediaEmbed', '|',
+            'undo', 'redo'
+        ]
+    })
+    .then(editor => {
+        editorInstance = editor;
 
-/* ── Auto slug ── */
-function autoSlug() {
-  const t = document.getElementById('title').value;
-  document.getElementById('slug').value = t.toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');
-}
+        editor.model.document.on('change:data', () => {
+            const text = editor.getData().replace(/<[^>]+>/g, '');
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
-/* ── Tags ── */
-function handleTag(e) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    const v = e.target.value.trim().replace(',','');
-    if (v && !tags.includes(v)) {
-      tags.push(v);
-      renderTags();
+            const wordCount = document.getElementById('wordCountBadge');
+            if (wordCount) wordCount.textContent = words + ' word' + (words !== 1 ? 's' : '');
+
+            const readTime = document.getElementById('readTimeCalc');
+            const readInput = document.getElementById('read_time');
+            const mins = Math.max(1, Math.ceil(words / 200));
+            if (readTime) readTime.textContent = `~${mins} min read`;
+            if (readInput) readInput.value = mins;
+
+            updateSeo();
+            updateChecklist();
+        });
+
+        // ✅ CRITICAL FIX: sync CKEditor data into the textarea before form submits
+        const form = document.getElementById('blogForm');
+        if (form) {
+            form.addEventListener('submit', () => {
+                editor.updateSourceElement(); // pushes editor content back into <textarea name="content">
+            });
+        }
+    })
+    .catch(error => console.error('CKEditor Error:', error));
+
+
+    /* ───────────────── Auto Slug ───────────────── */
+    window.autoSlug = function () {
+        const title = document.getElementById('title');
+        const slug = document.getElementById('slug');
+        if (!title || !slug) return;
+        slug.value = title.value
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+    };
+
+
+    /* ───────────────── Char Counter ───────────────── */
+    window.updateCharCount = function (fieldId, counterId, max) {
+        const field = document.getElementById(fieldId);
+        const counter = document.getElementById(counterId);
+        if (!field || !counter) return;
+
+        const len = field.value.length;
+        counter.textContent = `${len} / ${max}`;
+        counter.classList.remove('warn', 'over');
+        if (len > max) counter.classList.add('over');
+        else if (len > max * 0.85) counter.classList.add('warn');
+
+        updateSeo();
+        updateChecklist();
+    };
+
+
+    /* ───────────────── Featured Image ───────────────── */
+    window.previewImage = function (event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const url = URL.createObjectURL(file);
+
+        if (img) {
+            img.src = url;
+            img.onload = () => URL.revokeObjectURL(url);
+        }
+        if (wrap) wrap.classList.add('show');
+        if (uploadZone) uploadZone.style.display = 'none';
+
+        hasImage = true;
+        updateSeo();
+        updateChecklist();
+    };
+
+    window.clearImage = function () {
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = uploadZone?.querySelector('input[type="file"]');
+
+        if (img) img.src = '';
+        if (wrap) wrap.classList.remove('show');
+        if (uploadZone) uploadZone.style.display = '';
+        if (fileInput) fileInput.value = ''; // reset so backend doesn't get a stale file
+
+        hasImage = false;
+        updateSeo();
+        updateChecklist();
+    };
+
+
+    /* ───────────────── Gallery ───────────────── */
+    window.addGalleryImages = function (event) {
+        const files = Array.from(event.target.files || []);
+        const grid = document.getElementById('galleryGrid');
+        if (!grid) return;
+
+        files.forEach(file => {
+            const url = URL.createObjectURL(file);
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${url}" alt=""><button type="button" class="gallery-item-remove">×</button>`;
+            item.querySelector('button').addEventListener('click', () => {
+                item.remove();
+                URL.revokeObjectURL(url);
+            });
+            grid.insertBefore(item, grid.lastElementChild);
+        });
+    };
+
+
+    /* ───────────────── Video Upload ───────────────── */
+    window.switchVideoTab = function (tab, btn) {
+        document.querySelectorAll('.video-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.video-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('vp-' + tab)?.classList.add('active');
+    };
+
+    window.simulateUpload = function (event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const wrap = document.getElementById('videoProgressWrap');
+        const fill = document.getElementById('videoProgressFill');
+        const label = document.getElementById('videoProgressLabel');
+
+        if (wrap) wrap.classList.add('show');
+
+        let pct = 0;
+        const interval = setInterval(() => {
+            pct += 10;
+            if (fill) fill.style.width = pct + '%';
+            if (label) label.textContent = pct < 100 ? `Uploading… ${pct}%` : 'Upload complete';
+            if (pct >= 100) clearInterval(interval);
+        }, 120);
+    };
+
+
+    /* ───────────────── Status (Draft/Published/Scheduled) ───────────────── */
+    window.setStatus = function (btn, value) {
+        document.querySelectorAll('.status-opt').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+
+        const statusInput = document.getElementById('statusInput');
+        const scheduled = document.getElementById('scheduledField');
+        if (statusInput) statusInput.value = value;
+        if (scheduled) scheduled.style.display = value === 'scheduled' ? '' : 'none';
+    };
+
+
+    /* ───────────────── Save as Draft ───────────────── */
+    window.saveDraft = function () {
+        const statusInput = document.getElementById('statusInput');
+        if (statusInput) statusInput.value = 'draft';
+
+        if (editorInstance) editorInstance.updateSourceElement();
+
+        const form = document.getElementById('blogForm');
+        if (form) form.requestSubmit(); // submits to the SAME backend route, status = draft
+    };
+
+
+    /* ───────────────── SEO Score ───────────────── */
+    function updateSeo() {
+        const title = document.getElementById('title')?.value.length || 0;
+        const desc = document.getElementById('meta_description')?.value.length
+                  || document.getElementById('description')?.value.length || 0;
+
+        const checks = {
+            'seo-title-check': title >= 50 && title <= 60,
+            'seo-desc-check': desc >= 120 && desc <= 160,
+            'seo-img-check': hasImage,
+            'seo-content-check': (editorInstance
+                ? editorInstance.getData().replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length
+                : 0) >= 300
+        };
+
+        let passed = 0;
+        Object.entries(checks).forEach(([id, ok]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('pass', ok);
+            el.classList.toggle('fail', !ok);
+            if (ok) passed++;
+        });
+
+        const score = Math.round((passed / Object.keys(checks).length) * 100);
+        const scoreLabel = document.getElementById('seoScore');
+        const circle = document.getElementById('seoCircle');
+        if (scoreLabel) scoreLabel.textContent = score;
+        if (circle) circle.style.strokeDashoffset = 125.6 - (125.6 * score / 100);
     }
-    e.target.value = '';
-  }
-}
-function removeTag(btn, tag) {
-  tags = tags.filter(t => t !== tag);
-  renderTags();
-}
-function renderTags() {
-  const wrap = document.getElementById('tagsWrap');
-  const inp = document.getElementById('tagInput');
-  wrap.innerHTML = '';
-  tags.forEach(t => {
-    const chip = document.createElement('span');
-    chip.className = 'tag-chip';
-    chip.innerHTML = `${t} <button type="button" onclick="removeTag(this,'${t}')">×</button>`;
-    wrap.appendChild(chip);
-  });
-  wrap.appendChild(inp);
-  document.getElementById('tagsHidden').value = tags.join(',');
-}
+    window.updateSeo = updateSeo;
 
-/* ── Image preview ── */
-function previewImage(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  document.getElementById('imgPreview').src = url;
-  document.getElementById('imgPreviewWrap').classList.add('show');
-  document.getElementById('uploadZone').style.display = 'none';
-  hasImage = true;
-  updateSeo();
-  updateChecklist();
-}
-function clearImage() {
-  document.getElementById('imgPreviewWrap').classList.remove('show');
-  document.getElementById('uploadZone').style.display = '';
-  hasImage = false;
-  updateSeo();
-  updateChecklist();
-}
 
-/* ── Gallery ── */
-function addGalleryImages(e) {
-  const files = Array.from(e.target.files);
-  const grid = document.getElementById('galleryGrid');
-  files.forEach(file => {
-    const url = URL.createObjectURL(file);
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.innerHTML = `<img src="${url}" alt=""/><button type="button" class="gallery-item-remove" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-    grid.insertBefore(item, grid.lastElementChild);
-  });
-}
+    /* ───────────────── Pre-Publish Checklist ───────────────── */
+    function updateChecklist() {
+        const checks = {
+            'check-title': !!document.getElementById('title')?.value.trim(),
+            'check-desc': !!document.getElementById('description')?.value.trim(),
+            'check-img': hasImage,
+            'check-cat': !!document.getElementById('category')?.value,
+            'check-content': (editorInstance
+                ? editorInstance.getData().replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length
+                : 0) > 0
+        };
 
-/* ── Video tab ── */
-function switchVideoTab(tab, btn) {
-  document.querySelectorAll('.video-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.video-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('vp-' + tab).classList.add('active');
-}
-
-/* ── Fake upload progress ── */
-function simulateUpload(e) {
-  if (!e.target.files.length) return;
-  const wrap = document.getElementById('videoProgressWrap');
-  const fill = document.getElementById('videoProgressFill');
-  const label = document.getElementById('videoProgressLabel');
-  wrap.classList.add('show');
-  let p = 0;
-  const iv = setInterval(() => {
-    p += Math.random() * 12;
-    if (p >= 100) { p = 100; clearInterval(iv); label.textContent = 'Upload complete ✓'; }
-    else label.textContent = 'Uploading… ' + Math.round(p) + '%';
-    fill.style.width = p + '%';
-  }, 180);
-}
-
-/* ── Status toggle ── */
-function setStatus(btn, val) {
-  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('statusInput').value = val;
-  document.getElementById('scheduledField').style.display = val === 'scheduled' ? '' : 'none';
-}
-
-/* ── SEO Score ── */
-function updateSeo() {
-  const title = document.getElementById('title').value;
-  const desc = document.getElementById('description').value;
-  const text = editorInstance ? editorInstance.getData().replace(/<[^>]+>/g,'') : '';
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-
-  const checks = {
-    'seo-title-check': title.length >= 50 && title.length <= 60,
-    'seo-desc-check': desc.length >= 120 && desc.length <= 160,
-    'seo-img-check': hasImage,
-    'seo-content-check': words >= 300
-  };
-  let score = 0;
-  Object.entries(checks).forEach(([id, pass]) => {
-    score += pass ? 25 : 0;
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.className = 'seo-check ' + (pass ? 'pass' : 'fail');
-    el.innerHTML = `<svg viewBox="0 0 24 24">${pass ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}</svg> ${el.textContent.trim()}`;
-  });
-  document.getElementById('seoScore').textContent = score;
-  const circ = document.getElementById('seoCircle');
-  const circumference = 2 * Math.PI * 20;
-  circ.style.strokeDashoffset = circumference - (score / 100) * circumference;
-  const color = score < 50 ? '#ef4444' : score < 75 ? '#f97316' : '#10b981';
-  circ.style.stroke = color;
-  document.getElementById('seoScore').style.color = color;
-}
-
-/* ── Checklist ── */
-function updateChecklist() {
-  const title = document.getElementById('title').value.trim();
-  const desc = document.getElementById('description').value.trim();
-  const cat = document.getElementById('category').value;
-  const text = editorInstance ? editorInstance.getData().replace(/<[^>]+>/g,'') : '';
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-
-  setCheck('check-title', !!title);
-  setCheck('check-desc', !!desc);
-  setCheck('check-img', hasImage);
-  setCheck('check-cat', !!cat);
-  setCheck('check-content', words > 0);
-}
-function setCheck(id, pass) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const label = el.textContent.trim();
-  el.className = 'seo-check ' + (pass ? 'pass' : 'fail');
-  el.innerHTML = `<svg viewBox="0 0 24 24">${pass ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}</svg> ${label}`;
-}
-
-/* ── Category change ── */
-document.getElementById('category').addEventListener('change', updateChecklist);
-
-/* ── Save draft ── */
-function saveDraft() {
-  const now = new Date();
-  document.getElementById('lastSaved').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  showToast('Draft saved at ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-}
-
-/* ── Toast ── */
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-/* ── Auto-save every 2 min ── */
-setInterval(saveDraft, 120000);
-
-/* ── Drag-and-drop highlight ── */
-['dragover','dragleave','drop'].forEach(ev => {
-  document.getElementById('uploadZone').addEventListener(ev, e => {
-    e.preventDefault();
-    document.getElementById('uploadZone').classList.toggle('drag', ev === 'dragover');
-    if (ev === 'drop' && e.dataTransfer.files[0]) {
-      previewImage({ target: { files: e.dataTransfer.files } });
+        Object.entries(checks).forEach(([id, ok]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('pass', ok);
+            el.classList.toggle('fail', !ok);
+        });
     }
-  });
-  document.getElementById('videoUploadZone').addEventListener(ev, e => {
-    e.preventDefault();
-    document.getElementById('videoUploadZone').classList.toggle('drag', ev === 'dragover');
-  });
-});
+    window.updateChecklist = updateChecklist;
 
-/* Init SEO ring */
-document.getElementById('seoCircle').style.strokeDasharray = (2 * Math.PI * 20).toFixed(1);
-document.getElementById('seoCircle').style.strokeDashoffset = (2 * Math.PI * 20).toFixed(1);
-
-ClassicEditor
-    .create(document.querySelector('#editor'))
-    .catch(error => {
-        console.error(error);
+    // also recalc checklist when category changes
+    document.getElementById('category')?.addEventListener('change', () => {
+        updateSeo();
+        updateChecklist();
     });
+
+})();
