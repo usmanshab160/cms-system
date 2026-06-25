@@ -3,6 +3,27 @@
 
 <!-- ══════ TOP NAV ══════ -->
 
+@if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Success!',
+    text: '{{ session('success') }}',
+    timer: 3000,
+    showConfirmButton: false
+});
+</script>
+@endif
+
+@if($errors->any())
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Validation Error',
+    html: `{!! implode('<br>', $errors->all()) !!}`
+});
+</script>
+@endif
 
 <!-- ══════ LAYOUT ══════ -->
 <div class="layout">

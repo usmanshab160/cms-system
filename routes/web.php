@@ -24,6 +24,14 @@ Route::get('/pricing', function () {
     return view('pricing');
 });
 
+Route::get('/blogs', function () {
+    return view('blog-page');
+});
+
+Route::get('/blogs/detail', function () {
+    return view('blog-detailed');
+});
+
 // Route::post('/blog/store', [createController::class, 'store']);
 
 Route::get('/dashboard', function () {

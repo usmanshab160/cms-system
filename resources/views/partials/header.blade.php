@@ -54,7 +54,7 @@
       <ul class="nav-links">
         <li><a href="{{ url('http://127.0.0.1:8000/')}}" class="active">Home</a></li>
         <li><a href="{{ url('http://127.0.0.1:8000/create')}}">Add Blog</a></li>
-        <li><a href="#how">How it Works</a></li>
+        <li><a href="http://127.0.0.1:8000/blogs">Blogs</a></li>
         <li><a href="{{ url('http://127.0.0.1:8000/pricing')}}">Pricing</a></li>
       </ul>
 
@@ -80,7 +80,7 @@
   <div class="mobile-menu" id="mobile-menu">
     <a href="{{ url('http://127.0.0.1:8000/')}}">Home</a>
     <a href="{{ url('http://127.0.0.1:8000/create')}}">Add Blog</a>
-    <a href="#how">How it Works</a>
+    <a href="http://127.0.0.1:8000/blogs">Blogs</a>
     <a href="{{ url('http://127.0.0.1:8000/pricing')}}">Pricing</a>
     <div class="mobile-divider"></div>
     <div class="mobile-auth">

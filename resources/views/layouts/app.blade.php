@@ -23,6 +23,14 @@
     <link rel="stylesheet" href="{{ asset('css/signup.css') }}">
     <link rel="stylesheet" href="{{ asset('css/create.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pricing.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/blog-page.css') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/blog-detailed.css') }}">
+</head>
 </head>
 <body>
     
@@ -42,6 +50,7 @@
 
     <script src="{{ asset('js/create.js') }}"></script>
     <script src="{{ asset('js/pricing.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script> --}}
 </body>
 </html>
