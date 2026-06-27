@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BlogShowController;
 
 Route::get('/', function () {
     return view('home');
@@ -24,15 +25,6 @@ Route::get('/pricing', function () {
     return view('pricing');
 });
 
-Route::get('/blogs', function () {
-    return view('blog-page');
-});
-
-Route::get('/blogs/detail', function () {
-    return view('blog-detailed');
-});
-
-// Route::post('/blog/store', [createController::class, 'store']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -49,7 +41,13 @@ Route::get('/blog/create', function(){
         return view('blog.create');
 });
 
-Route::post('/blog/store', [BlogController::class,'store'])
-    ->name('blog.store');
+Route::get('/blogs', [BlogShowController::class, 'blogs']) ->name('blogs');
+// Route::get('/blog/{slug}', [BlogShowController::class, 'show'])
+//     ->name('blog.show');
+Route::get('/blog/{slug}', [BlogShowController::class, 'show'])
+    ->name('blog.show');
 
 require __DIR__.'/auth.php';
+
+
+

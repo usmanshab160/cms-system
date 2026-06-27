@@ -108,4 +108,5 @@ class BlogController extends Controller
                 ->with('success',
                     'Blog created successfully');
     }
+    
 }

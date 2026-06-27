@@ -1,71 +1,398 @@
 @extends('layouts.app')
 @section('content')
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Real-Time Collaboration — Clever CMS Blog</title>
 
+<style>
+/* ════════════════════════════════════════════════════
+   CLEVER CMS — ARTICLE / BLOG SINGLE PAGE
+   Fonts: Syne (display) + DM Sans (body)
+   Brand: #7c5cfc (purple) · Accent: #f97316 (orange)
+   ════════════════════════════════════════════════════ */
 
-</head>
-<body>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root{
+  --brand:#7c5cfc;
+  --brand-dark:#6645e0;
+  --brand-light:#f1edff;
+  --accent:#f97316;
+  --accent-light:#fff1e6;
+  --ink:#1a1730;
+  --ink-soft:#5c5870;
+  --line:#e9e6f5;
+  --surface:#ffffff;
+  --bg:#fbfaff;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --shadow-sm:0 2px 10px rgba(26,23,48,.05);
+  --shadow-md:0 10px 30px rgba(124,92,252,.12);
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+
+*{box-sizing:border-box;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--bg);
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{text-decoration:none;color:inherit;}
+
+.cc-container{max-width:1180px;margin:0 auto;padding:0 24px;}
+.cc-container-narrow{max-width:880px !important;margin:0 auto !important;padding:0 24px;width:100%;}
+
+/* ─── Reveal animation ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.animate-up{animation:fadeUp .7s ease both;}
+.delay-1{animation-delay:.08s;}
+.delay-2{animation-delay:.16s;}
+.delay-3{animation-delay:.24s;}
+
+@media (prefers-reduced-motion: reduce){
+  .animate-up{animation:none;}
+}
+
+/* ─── Reading progress bar ─── */
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--brand),var(--accent));
+  z-index:999;
+  transition:width .1s linear;
+}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb-bar{
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+  padding:18px 0;
+}
+.breadcrumb{
+  display:flex;align-items:center;gap:8px;
+  font-size:13.5px;font-weight:600;color:var(--ink-soft);
+  flex-wrap:wrap;
+}
+.breadcrumb a{color:var(--ink-soft);transition:color .2s;}
+.breadcrumb a:first-child{color:var(--brand);}
+.breadcrumb a:hover{color:var(--brand);}
+.breadcrumb a:last-of-type{color:var(--ink);}
+.breadcrumb-sep{width:14px;height:14px;stroke:#c6c1de;fill:none;stroke-width:2;flex-shrink:0;}
+
+/* ════════════════ ARTICLE HERO ════════════════ */
+.article-hero{
+  padding:56px 0 40px;
+  background:
+    radial-gradient(700px 320px at 85% -10%, rgba(124,92,252,.10), transparent 70%),
+    radial-gradient(500px 260px at 0% 0%, rgba(249,115,22,.06), transparent 70%);
+}
+.article-hero-inner{max-width:880px !important;margin:0 auto !important;width:100%;}
+
+.article-meta-row{
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;
+}
+.cat-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--brand-light);color:var(--brand-dark);
+  font-size:13px;font-weight:700;letter-spacing:.2px;
+  padding:7px 14px;border-radius:99px;
+}
+.reading-time-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--ink-soft);font-size:13px;font-weight:600;
+}
+.reading-time-badge svg{width:15px;height:15px;stroke:var(--ink-soft);fill:none;stroke-width:2;}
+
+.article-hero-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:42px;
+  line-height:1.18;
+  letter-spacing:-.5px;
+  margin:0 0 18px;
+  color:var(--ink);
+}
+.article-hero-title .highlight{
+  background:linear-gradient(90deg,var(--brand),var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+.article-lead{
+  font-size:18px;
+  line-height:1.65;
+  color:var(--ink-soft);
+  margin:0 0 28px;
+  font-weight:400;
+}
+
+.article-byline{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.byline-avatar{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--brand),#a98bff);
+  color:#fff;font-family:var(--font-display);font-weight:700;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+}
+.byline-info{margin-right:auto;}
+.byline-name{font-weight:700;font-size:15px;color:var(--ink);}
+.byline-role{font-size:13px;color:var(--ink-soft);margin-top:2px;}
+.byline-stats{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--ink-soft);font-weight:500;
+}
+.byline-dot{color:#cfc9e6;}
+
+.share-row{display:flex;align-items:center;gap:8px;}
+.share-label{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-right:4px;text-transform:uppercase;letter-spacing:.5px;}
+.share-btn{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--brand-light);transition:.2s;
+}
+.share-btn svg{width:15px;height:15px;stroke:var(--brand-dark);fill:none;stroke-width:2;}
+.share-btn:hover{background:var(--brand);}
+.share-btn:hover svg{stroke:#fff;}
+
+.hero-banner{margin-top:32px;max-width:880px !important;margin-left:auto !important;margin-right:auto !important;width:100%;}
+.hero-banner img{
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  aspect-ratio:16/9;object-fit:cover;width:100%;
+}
+
+/* ════════════════ ARTICLE BODY ════════════════ */
+.article-layout{padding:50px 0 30px;}
+.article-columns{max-width:880px !important;margin:0 auto !important;width:100%;}
+.article-body{width:100%;}
+
+.prose{font-size:17px;line-height:1.85;color:#2b2840;}
+.prose h2{
+  font-family:var(--font-display);font-weight:700;font-size:28px;
+  color:var(--ink);margin:46px 0 18px;letter-spacing:-.2px;
+}
+.prose h3{
+  font-family:var(--font-display);font-weight:700;font-size:22px;
+  color:var(--ink);margin:36px 0 14px;
+}
+.prose p{margin:0 0 22px;}
+.prose ul,.prose ol{margin:0 0 22px;padding-left:24px;}
+.prose li{margin-bottom:10px;}
+.prose li::marker{color:var(--brand);font-weight:700;}
+.prose a{color:var(--brand-dark);font-weight:600;border-bottom:1.5px solid var(--brand-light);}
+.prose a:hover{border-color:var(--brand-dark);}
+.prose strong{color:var(--ink);font-weight:700;}
+.prose blockquote{
+  margin:30px 0;padding:20px 26px;
+  border-left:3px solid var(--accent);
+  background:var(--accent-light);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-style:italic;color:var(--ink);font-size:17px;
+}
+.prose img{border-radius:var(--radius-md);margin:28px 0;box-shadow:var(--shadow-sm);}
+.prose figcaption{font-size:13.5px;color:var(--ink-soft);text-align:center;margin-top:-18px;margin-bottom:28px;}
+.prose pre{
+  background:#1a1730;color:#eae7fb;padding:18px 20px;border-radius:var(--radius-sm);
+  overflow-x:auto;font-size:14px;margin:26px 0;
+}
+.prose code{
+  background:var(--brand-light);color:var(--brand-dark);
+  padding:2px 7px;border-radius:6px;font-size:14.5px;
+}
+.prose pre code{background:none;color:inherit;padding:0;}
+.prose table{width:100%;border-collapse:collapse;margin:26px 0;font-size:15px;}
+.prose th,.prose td{padding:10px 14px;border:1px solid var(--line);text-align:left;}
+.prose th{background:var(--brand-light);color:var(--brand-dark);font-weight:700;}
+.prose hr{border:none;border-top:1px solid var(--line);margin:38px 0;}
+
+/* ─── Article footer ─── */
+.article-footer{
+  margin-top:48px;padding-top:32px;border-top:1px solid var(--line);
+}
+.article-tags{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:26px;}
+.article-tags-label{font-size:13px;font-weight:700;color:var(--ink-soft);}
+.article-tag{
+  background:var(--bg);border:1px solid var(--line);
+  padding:7px 14px;border-radius:99px;font-size:13.5px;font-weight:600;
+  color:var(--ink-soft);transition:.2s;
+}
+.article-tag:hover{border-color:var(--brand);color:var(--brand-dark);background:var(--brand-light);}
+
+.article-share-footer{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--brand-light);border-radius:var(--radius-md);
+  padding:18px 22px;
+}
+.share-footer-label{font-size:14px;font-weight:700;color:var(--ink);margin-right:6px;}
+.share-btn-lg{
+  display:inline-flex;align-items:center;gap:7px;
+  background:#fff;border:1px solid var(--line);
+  padding:9px 16px;border-radius:99px;font-size:13.5px;font-weight:700;
+  color:var(--ink);transition:.2s;
+}
+.share-btn-lg svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+.share-btn-lg:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
+
+/* ════════════════ AUTHOR BIO ════════════════ */
+.author-bio-section{padding:10px 0 60px;}
+.author-bio-card{
+  display:flex;gap:22px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  box-shadow:var(--shadow-sm);
+}
+.author-bio-avatar{
+  width:64px;height:64px;border-radius:50%;flex-shrink:0;
+  background:#7C5CFC;
+  color:#fff;font-family:var(--font-display);font-weight:700;font-size:19px;
+  display:flex;align-items:center;justify-content:center;
+}
+.author-bio-tag{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#6645e0;margin-bottom:4px;}
+.author-bio-name{font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--ink);}
+.author-bio-role{font-size:13.5px;color:var(--ink-soft);margin-top:2px;margin-bottom:14px;}
+.author-bio-desc{font-size:15px;line-height:1.7;color:#3b3752;margin:0 0 18px;}
+.author-bio-links{display:flex;gap:18px;flex-wrap:wrap;}
+.author-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13.5px;font-weight:700;color:var(--brand-dark);
+}
+.author-link svg{width:15px;height:15px;stroke:var(--brand-dark);fill:none;stroke-width:2;}
+.author-link:hover{text-decoration:underline;}
+
+/* ════════════════ MORE ARTICLES ════════════════ */
+.more-articles-section{padding:10px 0 80px;}
+.more-articles-section .cc-container{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:26px;
+}
+.more-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  transition:transform .25s ease, box-shadow .25s ease;
+  display:flex;flex-direction:column;
+}
+.more-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:transparent;}
+.more-card-thumb{
+  position:relative;aspect-ratio:16/10;background:var(--brand-light);overflow:hidden;
+}
+.more-card-thumb img{width:100%;height:100%;object-fit:cover;}
+.more-card-cat{
+  position:absolute;top:12px;left:12px;z-index:2;
+  background:rgba(26,23,48,.72);color:#fff;backdrop-filter:blur(4px);
+  font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;
+}
+.more-card-body{padding:18px 20px 22px;}
+.more-card-title{
+  font-family:var(--font-display);font-weight:700;font-size:16.5px;
+  line-height:1.4;color:var(--ink);margin:0 0 8px;
+}
+.more-card-desc{font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0;}
+
+/* ─── Back to top ─── */
+.back-top{
+  position:fixed;bottom:28px;right:28px;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--ink);color:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:.25s ease;z-index:90;
+  box-shadow:0 8px 24px rgba(26,23,48,.25);
+}
+.back-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.back-top:hover{background:var(--brand);}
+.back-top svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.4;}
+
+/* ════════════════ RESPONSIVE ════════════════ */
+@media (max-width:992px){
+  .more-articles-section .cc-container{grid-template-columns:repeat(2,1fr);}
+}
+
+@media (max-width:768px){
+  .article-hero{padding:36px 0 28px;}
+  .article-hero-title{font-size:30px;}
+  .article-lead{font-size:16.5px;}
+  .article-layout{padding:34px 0 10px;}
+  .prose{font-size:16px;}
+  .prose h2{font-size:23px;margin:36px 0 14px;}
+  .prose h3{font-size:19px;}
+  .author-bio-card{flex-direction:column;padding:24px;}
+  .more-articles-section .cc-container{grid-template-columns:1fr;}
+  .article-byline{gap:12px;}
+  .byline-stats{width:100%;order:3;}
+  .share-row{margin-left:auto;}
+}
+
+@media (max-width:480px){
+  .cc-container,.cc-container-narrow{padding:0 18px;}
+  .article-hero-title{font-size:25px;}
+  .article-meta-row{gap:8px;}
+  .article-share-footer{flex-direction:column;align-items:flex-start;}
+  .back-top{bottom:18px;right:18px;width:42px;height:42px;}
+  .breadcrumb{font-size:12.5px;}
+  .author-bio-links{gap:12px;}
+}
+</style>
 
 <!-- ─── READING PROGRESS ─── -->
 <div class="progress-bar" id="progressBar"></div>
 
 <!-- ─── BREADCRUMB ─── -->
 <nav class="breadcrumb-bar">
-  <div class="container">
+  <div class="cc-container">
     <div class="breadcrumb">
       <a href="#">⚡ clever CMS</a>
       <svg class="breadcrumb-sep" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
       <a href="#">Blog</a>
       <svg class="breadcrumb-sep" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      <a href="#">Product Updates</a>
-      <svg class="breadcrumb-sep" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      <span class="breadcrumb-current">Version 3.0: Real-Time Collaboration</span>
+      <a href="#">{{ $blog->category }}</a>
     </div>
   </div>
 </nav>
 
 <!-- ════════════════ ARTICLE HERO ════════════════ -->
 <section class="article-hero">
-  <div class="container">
+  <div class="cc-container">
     <div class="article-hero-inner">
 
       <div class="article-meta-row animate-up">
         <span class="cat-badge">
           <svg width="8" height="8" viewBox="0 0 8 8" style="fill:var(--brand)"><circle cx="4" cy="4" r="4"/></svg>
-          Product Updates
+          {{ $blog->category }}
         </span>
         <span class="reading-time-badge">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          6 min read
+          {{ $blog->read_time }} min read
         </span>
       </div>
 
       <h1 class="article-hero-title animate-up delay-1">
-        Introducing Version 3.0:<br>
-        <span class="highlight">Real-Time Collaboration</span> Is Here
+        {{ $blog->title }}
       </h1>
 
       <p class="article-lead animate-up delay-2">
-        Multiple editors, one page, zero conflicts. Here's how our biggest release yet helps teams write, review, and publish together — without stepping on each other's drafts.
+        {{ $blog->description }}
       </p>
 
       <div class="article-byline animate-up delay-3">
-        <div class="byline-avatar">AK</div>
+        <div class="byline-avatar">{{ Str::of($blog->author)->explode(' ')->map(fn($w)=>Str::substr($w,0,1))->join('') }}</div>
         <div class="byline-info">
-          <div class="byline-name">Ayesha Khan</div>
+          <div class="byline-name">{{ $blog->author }}</div>
           <div class="byline-role">Head of Product · Clever CMS</div>
         </div>
         <div class="byline-stats">
-          <span>Jun 22, 2026</span>
+          <span>{{ $blog->created_at->format('M d, Y') }}</span>
           <span class="byline-dot">·</span>
-          <span>6 min read</span>
+          <span>{{ $blog->read_time }} min read</span>
           <span class="byline-dot">·</span>
-          <span>2.4k views</span>
+          <span>{{ $blog->views ?? '2.4k' }} views</span>
         </div>
         <div class="share-row">
           <span class="share-label">Share</span>
@@ -81,321 +408,24 @@
         </div>
       </div>
 
-      <!-- Banner -->
-      <div class="hero-banner animate-up delay-4">
-        <div class="hero-banner-content">
-          <div class="hero-icon-card">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <div class="hero-stats-group">
-            <div class="hero-stat-card">
-              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-              <div>
-                <div class="hero-stat-label">Concurrent editors supported</div>
-                <div class="hero-stat-value">Up to 50 per page</div>
-              </div>
-            </div>
-            <div class="hero-stat-card">
-              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              <div>
-                <div class="hero-stat-label">Average sync latency</div>
-                <div class="hero-stat-value">&lt;120ms globally</div>
-              </div>
-            </div>
-            <div class="hero-stat-card">
-              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <div>
-                <div class="hero-stat-label">Conflict resolution</div>
-                <div class="hero-stat-value">Automatic, always</div>
-              </div>
-            </div>
-          </div>
-        </div>
+      @if($blog->featured_image)
+      <div class="hero-banner">
+        <img src="{{ asset('storage/'.$blog->featured_image) }}" alt="{{ $blog->img_alt }}">
       </div>
+      @endif
+
     </div>
   </div>
 </section>
 
 <!-- ════════════════ ARTICLE BODY ════════════════ -->
 <section class="article-layout">
-  <div class="container">
+  <div class="cc-container">
     <div class="article-columns">
 
-      <!-- ─── TOC Sidebar ─── -->
-      <aside class="toc-sidebar">
-        <div class="toc-title">In this article</div>
-        <ul class="toc-list">
-          <li class="active"><a href="#the-problem">The Problem We Solved</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li class="sub"><a href="#operational-transform">Under the Hood</a></li>
-          <li class="sub"><a href="#presence">Live Presence</a></li>
-          <li><a href="#whats-new">What's New in 3.0</a></li>
-          <li><a href="#getting-started">Getting Started</a></li>
-          <li><a href="#pricing">Pricing &amp; Limits</a></li>
-          <li><a href="#whats-next">What's Next</a></li>
-        </ul>
-
-        <div class="toc-divider"></div>
-
-        <div class="toc-cta">
-          <div class="toc-cta-text">Try Version 3.0 free for 14 days — no card required.</div>
-          <a href="#" class="toc-cta-btn">Start Free Trial →</a>
-        </div>
-      </aside>
-
-      <!-- ─── Main Article ─── -->
       <article class="article-body">
         <div class="prose">
-
-          <h2 id="the-problem">The Problem We Solved</h2>
-
-          <p>Anyone who has managed a content team knows the dance: one writer opens a draft, a second editor opens the same draft from a Slack link, and within minutes someone's changes overwrite someone else's. The result is a frantic Slack thread, a backup copy called <strong>final_v3_REAL_THIS_TIME.docx</strong>, and a half-hour of reconciliation before publish.</p>
-
-          <p>We've heard this story from hundreds of teams since Clever CMS launched. It's not a workflow problem — it's an infrastructure problem. Version 3.0 solves it at the root.</p>
-
-          <div class="stat-cards-row">
-            <div class="stat-card">
-              <div class="stat-card-number">73%</div>
-              <div class="stat-card-label">of teams report version conflict as their #1 publishing pain point</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card-number">2.4×</div>
-              <div class="stat-card-label">faster time-to-publish for teams using real-time collaboration</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card-number">0</div>
-              <div class="stat-card-label">lost changes in over 6 months of beta testing across 200 teams</div>
-            </div>
-          </div>
-
-          <div class="callout callout-info">
-            <div class="callout-icon">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <div class="callout-content">
-              <div class="callout-title">Version 3.0 is rolling out to all plans</div>
-              <div class="callout-text">Starter plans get up to 3 concurrent editors per page. Pro and Enterprise plans unlock up to 50. The feature is on by default — no action needed to enable it.</div>
-            </div>
-          </div>
-
-          <hr class="prose-hr">
-
-          <h2 id="how-it-works">How It Works</h2>
-
-          <p>At its core, Version 3.0 replaces Clever CMS's traditional lock-based document model with a fully distributed editing layer. Rather than granting one editor exclusive write access at a time, every connected editor works on a local replica of the document. Changes are streamed to a coordination layer in real time and merged automatically before being broadcast back to all connected clients.</p>
-
-          <div class="pull-quote">
-            <p>"The goal wasn't just to make it technically possible for two people to edit the same page. It was to make it feel like the most natural thing in the world."</p>
-            <cite>— Priya Nair, Engineering Lead, Clever CMS</cite>
-          </div>
-
-          <h3 id="operational-transform">Under the Hood: Operational Transformation</h3>
-
-          <p>The synchronization engine uses a variant of <strong>Operational Transformation (OT)</strong>, the same fundamental technique behind Google Docs. Every keystroke, block move, or metadata change is represented as a discrete, composable operation. When two operations conflict — say, you deleted a sentence at the same moment a colleague edited the last word of it — the engine applies a deterministic resolution algorithm to produce a result that honors the intent of both changes.</p>
-
-          <div class="code-block">
-            <div class="code-header">
-              <div class="code-dots">
-                <span class="code-dot"></span>
-                <span class="code-dot"></span>
-                <span class="code-dot"></span>
-              </div>
-              <span class="code-lang">Webhook · Publish event payload</span>
-            </div>
-            <pre><span class="cm">// Clever CMS fires this event after each collaborative save</span>
-{
-  <span class="str">"event"</span>: <span class="str">"page.saved"</span>,
-  <span class="str">"page_id"</span>: <span class="str">"pg_01HZ8KRQT"</span>,
-  <span class="str">"revision"</span>: <span class="fn">142</span>,
-  <span class="str">"editors_active"</span>: [
-    { <span class="str">"user_id"</span>: <span class="str">"u_ayesha"</span>, <span class="str">"cursor_block"</span>: <span class="str">"blk_intro"</span> },
-    { <span class="str">"user_id"</span>: <span class="str">"u_jamal"</span>,  <span class="str">"cursor_block"</span>: <span class="str">"blk_section2"</span> }
-  ],
-  <span class="str">"timestamp"</span>: <span class="str">"2026-06-22T09:41:03Z"</span>
-}</pre>
-          </div>
-
-          <h3 id="presence">Live Presence: Seeing Each Other in the Room</h3>
-
-          <p>Beyond conflict resolution, Version 3.0 introduces <strong>presence indicators</strong> — real-time cursors and selection highlights for every active editor. Each collaborator gets a uniquely colored cursor with their name, visible to everyone else on the page. You can see exactly who's writing what, which eliminates the coordination overhead of Slack threads like "don't touch the intro yet, I'm still editing it."</p>
-
-          <div class="feature-grid">
-            <div class="feature-item">
-              <div class="feature-item-icon">
-                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-              <div class="feature-item-title">Named Cursors</div>
-              <div class="feature-item-desc">Every editor's cursor appears with their name and a persistent color, so you always know who's where.</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item-icon">
-                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </div>
-              <div class="feature-item-title">Selection Highlighting</div>
-              <div class="feature-item-desc">Selected text is tinted in the editor's color, preventing you from modifying text a colleague is actively reading or revising.</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item-icon">
-                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <div class="feature-item-title">Inline Comments</div>
-              <div class="feature-item-desc">Leave contextual comments on any block. Mention teammates with @ — they get a real-time notification even if they're not currently in the document.</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item-icon">
-                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-              </div>
-              <div class="feature-item-title">Version History</div>
-              <div class="feature-item-desc">Every collaborative session is snapshotted. Browse, compare, and restore any previous state with one click — perfect for post-publish audits.</div>
-            </div>
-          </div>
-
-          <hr class="prose-hr">
-
-          <h2 id="whats-new">What's New in 3.0 vs 2.x</h2>
-
-          <p>Here's a full feature comparison between the previous version and Version 3.0, so you know exactly what's changed and what to expect when you update:</p>
-
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>Capability</th>
-                <th>Version 2.x</th>
-                <th>Version 3.0</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="col-feature">Concurrent editors</td>
-                <td class="col-v2"><span class="cross">✗</span> Single lock</td>
-                <td class="col-v3"><span class="check">✓</span> Up to 50</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Live presence cursors</td>
-                <td class="col-v2"><span class="cross">✗</span> Not available</td>
-                <td class="col-v3"><span class="check">✓</span> Named &amp; colored</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Conflict resolution</td>
-                <td class="col-v2">Manual merge required</td>
-                <td class="col-v3"><span class="check">✓</span> Automatic (OT)</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Inline comments</td>
-                <td class="col-v2">Block-level only</td>
-                <td class="col-v3">Inline + threaded</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Version history</td>
-                <td class="col-v2">Daily snapshots</td>
-                <td class="col-v3">Per-session snapshots</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Webhook on save</td>
-                <td class="col-v2">On publish only</td>
-                <td class="col-v3">Every collaborative save</td>
-              </tr>
-              <tr>
-                <td class="col-feature">Offline editing</td>
-                <td class="col-v2"><span class="cross">✗</span> Not supported</td>
-                <td class="col-v3"><span class="check">✓</span> Queue &amp; sync on reconnect</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="callout callout-tip">
-            <div class="callout-icon">
-              <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <div class="callout-content">
-              <div class="callout-title">Already on a paid plan?</div>
-              <div class="callout-text">You're upgraded automatically. Head to <strong>Settings → Collaboration</strong> to configure concurrent editor limits, notification preferences, and session timeout durations for your workspace.</div>
-            </div>
-          </div>
-
-          <hr class="prose-hr">
-
-          <h2 id="getting-started">Getting Started in 5 Steps</h2>
-
-          <p>You don't need to change anything about how you use Clever CMS to get started. Collaboration is live for every page, every workspace, right now. Here's how to make the most of it from day one:</p>
-
-          <ol class="steps-list">
-            <li class="step-item">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <div class="step-title">Open any page in the editor</div>
-                <div class="step-desc">Navigate to the page you want to edit. You'll see a new collaborators panel in the top-right of the editor toolbar showing who else is currently viewing the page.</div>
-              </div>
-            </li>
-            <li class="step-item">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <div class="step-title">Share the editor link with your team</div>
-                <div class="step-desc">Click the <strong>Share</strong> button in the top bar. Anyone with editor permissions in your workspace can join via the link — no invite flow needed.</div>
-              </div>
-            </li>
-            <li class="step-item">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <div class="step-title">Watch cursors appear in real time</div>
-                <div class="step-desc">As teammates join, you'll see their named cursors appear and move around the document. Each person's edits are highlighted in their color as they type.</div>
-              </div>
-            </li>
-            <li class="step-item">
-              <div class="step-num">4</div>
-              <div class="step-content">
-                <div class="step-title">Use inline comments for review</div>
-                <div class="step-desc">Highlight any text and click the comment bubble that appears. Type your note and <strong>@mention</strong> a colleague — they'll get a notification even if they're offline.</div>
-              </div>
-            </li>
-            <li class="step-item">
-              <div class="step-num">5</div>
-              <div class="step-content">
-                <div class="step-title">Publish when the team is ready</div>
-                <div class="step-desc">Any editor with publish rights can hit the Publish button. A snapshot of the final collaborative session is saved automatically to version history before going live.</div>
-              </div>
-            </li>
-          </ol>
-
-          <div class="callout callout-warn">
-            <div class="callout-icon">
-              <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </div>
-            <div class="callout-content">
-              <div class="callout-title">Heads up: legacy page-lock behavior is removed</div>
-              <div class="callout-text">If your team relied on the old "lock page for editing" button to signal work-in-progress, that button is gone in 3.0. Presence indicators replace it — use a colleague's cursor as the signal that a block is actively being edited.</div>
-            </div>
-          </div>
-
-          <hr class="prose-hr">
-
-          <h2 id="pricing">Pricing &amp; Editor Limits</h2>
-
-          <p>Real-time collaboration is available on all Clever CMS plans with no additional cost. The number of concurrent editors per page scales with your plan tier:</p>
-
-          <ul>
-            <li><strong>Starter</strong> — Up to 3 simultaneous editors per page. Perfect for small content teams and solo founders with occasional contributors.</li>
-            <li><strong>Pro</strong> — Up to 15 simultaneous editors. Includes full version history, threaded comments, and priority support.</li>
-            <li><strong>Enterprise</strong> — Up to 50 editors with dedicated infrastructure, SSO, custom retention policies, and a 99.9% uptime SLA for the collaboration layer.</li>
-          </ul>
-
-          <p>If your team has edge cases — an editorial sprint where 80 writers need to work simultaneously on different sections — <a href="#">contact our team</a>. We've already handled this for a few large newsrooms and can scale to fit.</p>
-
-          <hr class="prose-hr">
-
-          <h2 id="whats-next">What's Next</h2>
-
-          <p>Version 3.0 is the foundation, not the ceiling. The collaboration layer we've built unlocks a roadmap of features that weren't possible before. Here's what we're working on for the next two quarters:</p>
-
-          <ul>
-            <li><strong>Suggested Edits mode</strong> — Like Google Docs' "Suggesting" mode, reviewers will be able to propose changes that require an author to accept or reject before publishing.</li>
-            <li><strong>AI co-editor</strong> — Invite Claude directly into a collaborative session to help rewrite, expand, or summarize sections without leaving the editor.</li>
-            <li><strong>Mobile collaboration</strong> — Full collaborative editing in the Clever CMS iOS and Android apps, including presence indicators optimized for small screens.</li>
-            <li><strong>Zapier and Make integration</strong> — Trigger automations on collaborative session events — a session ending, a comment being resolved, or a page reaching its first approval.</li>
-          </ul>
-
-          <p>The best way to stay up to date is to subscribe to our weekly newsletter below. We ship fast, and we announce everything there first.</p>
-
+          {!! $blog->content !!}
         </div>
 
         <!-- ─── Article Footer ─── -->
@@ -424,26 +454,26 @@
             </a>
           </div>
         </div>
-
       </article>
+
     </div>
   </div>
 </section>
 
 <!-- ════════════════ AUTHOR BIO ════════════════ -->
 <section class="author-bio-section">
-  <div class="container-narrow">
+  <div class="cc-container-narrow">
     <div class="author-bio-card animate-up">
-      <div class="author-bio-avatar">AK</div>
+      <div class="author-bio-avatar">{{ Str::of($blog->author)->explode(' ')->map(fn($w)=>Str::substr($w,0,1))->join('') }}</div>
       <div class="author-bio-content">
         <div class="author-bio-tag">Written by</div>
-        <div class="author-bio-name">Ayesha Khan</div>
-        <div class="author-bio-role">Head of Product · Clever CMS · she/her</div>
+        <div class="author-bio-name">{{ $blog->author }}</div>
+        <div class="author-bio-role">Head of Product · Clever CMS</div>
         <p class="author-bio-desc">Ayesha leads product at Clever CMS, where she's been building tools for content teams since 2020. Before joining, she ran product at two B2B SaaS startups and wrote a weekly newsletter on content operations that reached 12,000 subscribers. She believes the best software feels like it was designed by someone who actually does the job.</p>
         <div class="author-bio-links">
           <a href="#" class="author-link">
             <svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></svg>
-            @ayeshakhan
+            @{{ Str::slug($blog->author) }}
           </a>
           <a href="#" class="author-link">
             <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
@@ -451,7 +481,7 @@
           </a>
           <a href="#" class="author-link">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            All posts by Ayesha
+            All posts by {{ Str::of($blog->author)->explode(' ')->first() }}
           </a>
         </div>
       </div>
@@ -461,90 +491,21 @@
 
 <!-- ════════════════ MORE ARTICLES ════════════════ -->
 <section class="more-articles-section">
-  <div class="container">
-    <div class="section-header">
-      <span class="tag">
-        <svg width="8" height="8" viewBox="0 0 8 8" style="fill:var(--brand)"><circle cx="4" cy="4" r="4"/></svg>
-        Keep Reading
-      </span>
-      <h2 class="section-title">More From the Blog</h2>
-      <p class="section-sub">Guides, updates, and deep-dives from the Clever CMS team.</p>
-    </div>
-
-    <div class="more-grid">
-
-      <a href="#" class="more-card">
-        <div class="more-card-thumb thumb-green">
-          <span class="more-card-cat">Tutorials</span>
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  <div class="cc-container">
+    @foreach($relatedBlogs as $related)
+      <a href="{{ route('blog.show',$related->slug) }}" class="more-card">
+        <div class="more-card-thumb">
+          <span class="more-card-cat">{{ $related->category }}</span>
+          @if($related->featured_image)
+            <img src="{{ asset('storage/'.$related->featured_image) }}" alt="{{ $related->img_alt }}">
+          @endif
         </div>
         <div class="more-card-body">
-          <h3 class="more-card-title">10 Drag-and-Drop Tricks Every New Editor Should Know</h3>
-          <p class="more-card-desc">Speed up your workflow with shortcuts and layout tricks most editors don't discover for months.</p>
-          <div class="post-meta">
-            <div class="post-avatar">MR</div>
-            <div class="post-meta-text"><strong>Maya Reyes</strong><span class="post-meta-dot">·</span> Jun 18, 2026</div>
-          </div>
+          <h3 class="more-card-title">{{ $related->title }}</h3>
+          <p class="more-card-desc">{{ Str::limit($related->description, 100) }}</p>
         </div>
       </a>
-
-      <a href="#" class="more-card">
-        <div class="more-card-thumb thumb-orange">
-          <span class="more-card-cat">SEO</span>
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <div class="more-card-body">
-          <h3 class="more-card-title">How to Structure Meta Tags for Better Search Rankings</h3>
-          <p class="more-card-desc">A practical checklist for titles, descriptions, and Open Graph tags that search engines actually reward.</p>
-          <div class="post-meta">
-            <div class="post-avatar">JS</div>
-            <div class="post-meta-text"><strong>Jamal Siddiqui</strong><span class="post-meta-dot">·</span> Jun 15, 2026</div>
-          </div>
-        </div>
-      </a>
-
-      <a href="#" class="more-card">
-        <div class="more-card-thumb thumb-dark">
-          <span class="more-card-cat">Company News</span>
-          <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
-        </div>
-        <div class="more-card-body">
-          <h3 class="more-card-title">Clever CMS Raises $12M Series A to Expand Globally</h3>
-          <p class="more-card-desc">The new funding will go toward localization, enterprise features, and a faster publishing pipeline.</p>
-          <div class="post-meta">
-            <div class="post-avatar">AK</div>
-            <div class="post-meta-text"><strong>Ayesha Khan</strong><span class="post-meta-dot">·</span> Jun 08, 2026</div>
-          </div>
-        </div>
-      </a>
-
-    </div>
-
-    <div class="btn-row">
-      <a href="#" class="btn-outline">
-        Browse All Articles
-        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════ NEWSLETTER ════════════════ -->
-<section class="newsletter-section">
-  <div class="container">
-    <div class="newsletter-inner">
-      <div class="newsletter-tag">
-        <svg width="8" height="8" viewBox="0 0 8 8" style="fill:#fff"><circle cx="4" cy="4" r="4"/></svg>
-        Stay in the Loop
-      </div>
-      <h2 class="newsletter-title">Get Our Best Posts<br/>Straight to Your Inbox</h2>
-      <p class="newsletter-sub">One email a week. No spam, no fluff — just the guides and updates worth reading.</p>
-      <form class="newsletter-form" onsubmit="return false;">
-        <input type="email" placeholder="you@company.com" required>
-        <button type="submit" class="btn-newsletter">Subscribe</button>
-      </form>
-      <p class="newsletter-note">Join 4,200+ teams already subscribed · Unsubscribe anytime</p>
-    </div>
+    @endforeach
   </div>
 </section>
 
@@ -554,7 +515,6 @@
 </button>
 
 <script>
-  /* ─── Reading Progress ─── */
   const progressBar = document.getElementById('progressBar');
   const backTop = document.getElementById('backTop');
 
@@ -570,32 +530,6 @@
   backTop.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-
-  /* ─── TOC Active State ─── */
-  const sections = document.querySelectorAll('.prose h2[id], .prose h3[id]');
-  const tocLinks = document.querySelectorAll('.toc-list li');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        tocLinks.forEach(li => li.classList.remove('active'));
-        const id = entry.target.getAttribute('id');
-        const active = document.querySelector(`.toc-list li a[href="#${id}"]`);
-        if (active) active.parentElement.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-20% 0px -70% 0px' });
-
-  sections.forEach(s => observer.observe(s));
-
-  /* ─── Filter pills (demo) ─── */
-  document.querySelectorAll('.filter-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
 </script>
-</body>
-</html>
+
 @endsection

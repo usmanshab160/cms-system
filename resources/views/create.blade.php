@@ -190,28 +190,6 @@ Swal.fire({
             </div>
           </div>
 
-          <!-- CARD 3: Blog Content -->
-          {{-- <div class="form-card">
-            <div class="form-card-header">
-              <div class="form-card-icon">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              </div>
-              <div>
-                <div class="form-card-title">Blog Content</div>
-                <div class="form-card-sub">Rich text editor — supports headings, lists, media embeds</div>
-              </div>
-            </div>
-            <div class="form-card-body">
-              <div class="field">
-                <textarea name="content" id="editor" placeholder="Start writing your blog post…"></textarea>
-                <div class="word-count-bar">
-                  <span>Word count: <span class="wc-pill" id="wordCountBadge">0 words</span></span>
-                  <span id="readTimeCalc">~0 min read</span>
-                </div>
-              </div>
-            </div>
-          </div> --}}
-
           <div class="form-card">
     <div class="form-card-header">
         <div class="form-card-icon">
@@ -250,37 +228,6 @@ Swal.fire({
     </div>
 </div>
 
-<!-- CKEditor 5 -->
-{{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
-<style>
-    .ck-editor__editable {
-        min-height: 400px;
-    }
-</style>
-
-<script>
-    ClassicEditor
-        .create(document.querySelector('#editor'))
-        .then(editor => {
-            editor.model.document.on('change:data', () => {
-
-                const text = editor.getData().replace(/<[^>]*>/g, ' ');
-                const words = text.trim()
-                    ? text.trim().split(/\s+/).length
-                    : 0;
-
-                document.getElementById('wordCountBadge').textContent =
-                    words + ' words';
-
-                document.getElementById('readTimeCalc').textContent =
-                    '~' + Math.max(1, Math.ceil(words / 200)) + ' min read';
-            });
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script> --}}
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
           <!-- CARD 4: Gallery Images -->
