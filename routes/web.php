@@ -17,13 +17,26 @@ Route::get('/signin', function () {
     return view('signin');
 });
 
-Route::get('/create', function () {
-    return view('create');
-});
 
 Route::get('/pricing', function () {
     return view('pricing');
 });
+
+Route::get('/blog-create', function () {
+    return view('create');
+})->name('blog.create');
+
+// Route::get('/create', function () {
+//     return view('create');
+// })->name('blog.create');
+
+Route::post('/blog-create/store', [BlogController::class, 'store'])
+    ->name('blog.store');
+Route::get('/blogs', [BlogShowController::class, 'blogs']) ->name('blogs');
+
+Route::get('/blog/{slug}', [BlogShowController::class, 'show'])
+    ->name('blog.show');
+
 
 
 Route::get('/dashboard', function () {
@@ -37,15 +50,10 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/blog/create', function(){
-        return view('blog.create');
-});
+// Route::get('/blog/create', function () {
+//     return view('blog.create');
+// })->name('blog.create');
 
-Route::get('/blogs', [BlogShowController::class, 'blogs']) ->name('blogs');
-// Route::get('/blog/{slug}', [BlogShowController::class, 'show'])
-//     ->name('blog.show');
-Route::get('/blog/{slug}', [BlogShowController::class, 'show'])
-    ->name('blog.show');
 
 require __DIR__.'/auth.php';
 

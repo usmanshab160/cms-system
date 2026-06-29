@@ -310,6 +310,13 @@ a{text-decoration:none;color:inherit;}
 .back-top:hover{background:var(--brand);}
 .back-top svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.4;}
 
+.galley-images{
+width:100%;
+display:flex;
+}
+.galley-images-sections{
+justify-content:space-between;
+}
 /* ════════════════ RESPONSIVE ════════════════ */
 @media (max-width:992px){
   .more-articles-section .cc-container{grid-template-columns:repeat(2,1fr);}
@@ -427,9 +434,25 @@ a{text-decoration:none;color:inherit;}
         <div class="prose">
           {!! $blog->content !!}
         </div>
-
+        {{-- Hello --}}
+        {{-- <div class='galley-images'>
+          <div class="galley-images-sections">
+            <img src="" />
+          </div>
+        </div> --}}
+        <div class="galley-images">
+    @if($blog->galleries->count())
+        @foreach($blog->galleries as $gallery)
+            <div class="galley-images-sections">
+                <img src="{{ asset('storage/' . $gallery->image) }}"
+                     alt="{{ $blog->img_alt }}">
+            </div>
+        @endforeach
+    @endif
+</div>
         <!-- ─── Article Footer ─── -->
         <div class="article-footer">
+          
           <div class="article-tags">
             <span class="article-tags-label">Tagged:</span>
             <a href="#" class="article-tag">Product Updates</a>
@@ -486,26 +509,6 @@ a{text-decoration:none;color:inherit;}
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ════════════════ MORE ARTICLES ════════════════ -->
-<section class="more-articles-section">
-  <div class="cc-container">
-    @foreach($relatedBlogs as $related)
-      <a href="{{ route('blog.show',$related->slug) }}" class="more-card">
-        <div class="more-card-thumb">
-          <span class="more-card-cat">{{ $related->category }}</span>
-          @if($related->featured_image)
-            <img src="{{ asset('storage/'.$related->featured_image) }}" alt="{{ $related->img_alt }}">
-          @endif
-        </div>
-        <div class="more-card-body">
-          <h3 class="more-card-title">{{ $related->title }}</h3>
-          <p class="more-card-desc">{{ Str::limit($related->description, 100) }}</p>
-        </div>
-      </a>
-    @endforeach
   </div>
 </section>
 
