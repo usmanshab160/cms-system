@@ -335,8 +335,10 @@ justify-content:space-between;
   .article-byline{gap:12px;}
   .byline-stats{width:100%;order:3;}
   .share-row{margin-left:auto;}
-}
+  .galley-images{display:flex;flex-direction:column;gap:12px;}
 
+}
+/* .galley-images-sections */
 @media (max-width:480px){
   .cc-container,.cc-container-narrow{padding:0 18px;}
   .article-hero-title{font-size:25px;}
@@ -345,6 +347,7 @@ justify-content:space-between;
   .back-top{bottom:18px;right:18px;width:42px;height:42px;}
   .breadcrumb{font-size:12.5px;}
   .author-bio-links{gap:12px;}
+  .galley-images{display:flex;flex-direction:column;gap:12px;}
 }
 </style>
 
