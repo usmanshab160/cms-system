@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 class BlogController extends Controller
+
 {
     public function store(Request $request)
     {
+            // dd('Store reached');
+                // dd($request->all());
+// dd(Auth::check(), Auth::id(), Auth::user());
+
         $request->validate([
 
             'title'=>'required|max:255',
@@ -30,6 +38,9 @@ class BlogController extends Controller
 
 
         $blog = new Blog();
+
+        $blog->user_id = Auth::id();
+        $blog->author_name = Auth::user()->name;
 
         $blog->title = $request->title;
 
@@ -63,7 +74,6 @@ class BlogController extends Controller
         $blog->scheduled_at =
             $request->scheduled_at;
 
-        $blog->author = $request->author;
 
         // Featured Image
         if($request->hasFile('featured_image'))
@@ -84,7 +94,7 @@ class BlogController extends Controller
 
             $blog->video = $video;
         }
-
+// dd($blog);
         $blog->save();
 
         // Gallery Images
@@ -107,6 +117,8 @@ class BlogController extends Controller
                 ->back()
                 ->with('success',
                     'Blog created successfully');
+
+
     }
     
 }

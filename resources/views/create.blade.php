@@ -416,10 +416,10 @@ Swal.fire({
                 <span class="pub-meta-label">Visibility</span>
                 <span class="pub-meta-val brand">Public</span>
               </div>
-              <div class="pub-meta-item">
+              {{-- <div class="pub-meta-item">
                 <span class="pub-meta-label">Author</span>
                 <span class="pub-meta-val">Ali Khan</span>
-              </div>
+              </div> --}}
               <div class="pub-meta-item">
                 <span class="pub-meta-label">Last saved</span>
                 <span class="pub-meta-val" id="lastSaved">—</span>
@@ -446,17 +446,26 @@ Swal.fire({
             </div>
             <div class="publish-card-body">
               <div class="field">
-                <label for="author">Assign Author</label>
-                <div class="input-wrap select-wrap">
-                  <span class="input-icon">
+                {{-- <label for="author">Assign Author</label> --}}
+               <div class="input-wrap select-wrap">
+                <div class="pub-meta-item">
+                  {{-- <span class="pub-meta-val">Author</span> --}}
+                <svg style="width: 20px" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="pub-meta-val">Ali Khan</span>
+              </div> 
+                  {{-- <span class="input-icon">
                     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </span>
-                  <select id="author" name="author">
+                  </span> --}}
+                  {{-- <div class="pub-meta-item">
+                <span class="pub-meta-label">Author</span>
+                <span class="pub-meta-val">Ali Khan</span>
+              </div> --}}
+                  {{-- <select id="author" name="author">
                     <option>Ali Khan</option>
                     <option>Maria Reyes</option>
                     <option>James Smith</option>
                   </select>
-                </div>
+                </div> --}}
               </div>
             </div>
           </div>

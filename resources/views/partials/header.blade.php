@@ -15,6 +15,9 @@
         <li><a href="http://127.0.0.1:8000/blogs">Blogs</a></li>
         <li><a href="{{ url('http://127.0.0.1:8000/pricing')}}">Pricing</a></li>
       </ul>
+
+
+
       <div class="nav-auth">
         @auth
           <form method="POST" action="{{ route('logout') }}" style="display:inline;">
@@ -77,7 +80,7 @@
           <div class="profile-wrap" id="profile-wrap">
             <button class="profile-trigger" id="profile-trigger" type="button">
               <div class="profile-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-              <span class="profile-name">{{ explode(' ', auth()->user()->name)[0] }}</span>
+             <span class="profile-name">{{ explode(' ', auth()->user()->name)[0] }}</span>
               <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
             </button>
 
@@ -85,7 +88,7 @@
               <div class="profile-dd-header">
                 <div class="profile-dd-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                 <div class="profile-dd-info">
-                  <div class="profile-dd-name">{{ auth()->user()->name }}</div>
+                  <a href="{{ url('http://127.0.0.1:8000/user-profile')}}"> <div class="profile-dd-name">{{ auth()->user()->name }}</div></a>
                   <div class="profile-dd-email">{{ auth()->user()->email }}</div>
                   <div class="profile-dd-role">{{ auth()->user()->role }}</div>
                 </div>
