@@ -36,3 +36,22 @@
     el.style.transition = `opacity 0.55s ease ${i * 0.08}s, transform 0.55s ease ${i * 0.08}s`;
     observer.observe(el);
   });
+
+  // Profile dropdown toggle
+const profileTrigger = document.getElementById('profile-trigger');
+const profileDropdown = document.getElementById('profile-dropdown');
+
+if (profileTrigger && profileDropdown) {
+  profileTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    profileTrigger.classList.toggle('open');
+    profileDropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('profile-wrap').contains(e.target)) {
+      profileTrigger.classList.remove('open');
+      profileDropdown.classList.remove('open');
+    }
+  });
+}
