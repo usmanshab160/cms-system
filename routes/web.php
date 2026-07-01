@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogShowController;
+use App\Http\Controllers\UserProfileController;
+
 
 Route::get('/', function () {
     return view('home');
@@ -44,9 +46,14 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::get('/user-profile', function () {
-    return view('profile');
-});
+Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('user.profile');
+
+
+
+// Route::get('/user-profile', [UserProfileController::class, 'profile'])
+//         ->name('user.profile');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

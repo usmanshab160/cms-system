@@ -284,7 +284,7 @@
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
           </div>
         </div>
-        <div class="profile-stat-val">{{ $totalArticles ?? 0 }}</div>
+        <div class="profile-stat-val">{{ $user->blogs_count }}</div>
         <div class="profile-stat-lbl">Total Articles</div>
       </div>
 
@@ -295,7 +295,7 @@
           </div>
           <span class="profile-stat-badge">Live</span>
         </div>
-        <div class="profile-stat-val">{{ $publishedArticles ?? 0 }}</div>
+        <div class="profile-stat-val">{{ $user->published_count }}</div>
         <div class="profile-stat-lbl">Published Articles</div>
       </div>
 
@@ -306,7 +306,7 @@
           </div>
           <span class="profile-stat-badge">Draft</span>
         </div>
-        <div class="profile-stat-val">{{ $draftArticles ?? 0 }}</div>
+        <div class="profile-stat-val">{{ $user->draft_count }}</div>
         <div class="profile-stat-lbl">Draft Articles</div>
       </div>
 
@@ -317,7 +317,7 @@
           </div>
           <span class="profile-stat-badge">Scheduled</span>
         </div>
-        <div class="profile-stat-val">{{ $scheduledArticles ?? 0 }}</div>
+        <div class="profile-stat-val">{{ $user->scheduled_count }}</div>
         <div class="profile-stat-lbl">Scheduled Articles</div>
       </div>
     </div>
