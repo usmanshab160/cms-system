@@ -268,7 +268,7 @@
       </div>
 
       <div class="profile-hero-actions">
-        <a href="{{ url('#') }}" class="btn-edit-profile">
+        <a href="{{ url('http://127.0.0.1:8000/edit-profile') }}" class="btn-edit-profile">
           <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
           Edit Profile
         </a>

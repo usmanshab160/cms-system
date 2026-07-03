@@ -6,7 +6,6 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\UserProfileController;
 
-
 Route::get('/', function () {
     return view('home');
 });
@@ -52,13 +51,27 @@ Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('us
 
 // Route::get('/user-profile', [UserProfileController::class, 'profile'])
 //         ->name('user.profile');
-
+// Route::get('/edit-profile', function () {
+//     return view('edit-profile');
+// });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/edit-profile', [UserProfileController::class, 'editUserForm'])
+        ->name('edit-profile.edit');
+
+    Route::put('/edit-profile/update', [UserProfileController::class, 'updateUserForm'])
+        ->name('edit-profile.update');
+
+    Route::delete('/edit-profile/delete', [UserProfileController::class, 'destroyUserForm'])
+        ->name('edit-profile.delete');
 });
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 
 // Route::get('/blog/create', function () {
