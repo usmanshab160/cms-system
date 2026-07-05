@@ -669,15 +669,15 @@
 
             <div class="epf-stats-grid">
                 <div class="epf-stat-card published">
-                    <div class="epf-stat-number">{{ $publishedCount ?? 0 }}</div>
+                    <div class="epf-stat-number">{{   $user->published_count }}</div>
                     <div class="epf-stat-label">Published</div>
                 </div>
                 <div class="epf-stat-card draft">
-                    <div class="epf-stat-number">{{ $draftCount ?? 0 }}</div>
+                    <div class="epf-stat-number">{{ $user->draft_count }}</div>
                     <div class="epf-stat-label">Drafts</div>
                 </div>
                 <div class="epf-stat-card scheduled">
-                    <div class="epf-stat-number">{{ $scheduledCount ?? 0 }}</div>
+                    <div class="epf-stat-number">{{ $user->scheduled_count }}</div>
                     <div class="epf-stat-label">Scheduled</div>
                 </div>
             </div>
@@ -705,7 +705,7 @@
                             </div>
                         </div>
                         <div class="epf-article-actions">
-                            <a href="{{ route('articles.edit', $article->id) }}" class="epf-icon-btn edit" title="Edit">
+                            <a href="{{ route('blogs.edit', $article->id) }}" class="epf-icon-btn edit" title="Edit">
                                 ✎
                             </a>
                             <button type="button" class="epf-icon-btn delete" title="Delete"

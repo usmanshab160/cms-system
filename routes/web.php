@@ -45,7 +45,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('user.profile');
+// Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('user.profile');
 
 
 
@@ -65,7 +65,19 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/edit-profile/delete', [UserProfileController::class, 'destroyUserForm'])
         ->name('edit-profile.delete');
+
+    Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('user.profile');
+
+    Route::delete('/articles/{article}', [UserProfileController::class, 'destroyArticle'])
+    ->name('articles.destroy');
+
+    Route::get('/blogs/{id}/edit', [UserProfileController::class, 'editBlog'])
+        ->name('blogs.edit');
+
+    Route::put('/blogs/{id}', [UserProfileController::class, 'updateBlog'])
+        ->name('blogs.update');
 });
+
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

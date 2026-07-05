@@ -114,7 +114,8 @@ class BlogController extends Controller
         }
 
         return redirect()
-                ->back()
+                // ->back()
+                ->route('blogs')
                 ->with('success',
                     'Blog created successfully');
 
