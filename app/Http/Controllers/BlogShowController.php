@@ -11,7 +11,10 @@ class BlogShowController extends Controller
   // All blogs listing page
     public function blogs()
     {
-        $blogs = Blog::where('status', 'published')->latest()->get();
+        $blogs = Blog::where('status', 'published')
+        ->latest()
+        ->paginate(6);
+        // ->get();
 
         return view('blog-page', compact('blogs'));
     }

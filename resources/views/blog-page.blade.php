@@ -96,13 +96,48 @@
 @endforeach
     </div>
 
-    <div class="blog-pagination">
-      <a href="#" class="page-btn nav"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
-      <a href="#" class="page-btn active">1</a>
-      <a href="#" class="page-btn">2</a>
-      <a href="#" class="page-btn">3</a>
-      <a href="#" class="page-btn nav"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
-    </div>
+@if ($blogs->hasPages())
+<div class="blog-pagination">
+
+    {{-- Previous --}}
+    @if ($blogs->onFirstPage())
+        <span class="page-btn nav disabled">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </span>
+    @else
+        <a href="{{ $blogs->previousPageUrl() }}" class="page-btn nav">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+    @endif
+
+    @for ($i = 1; $i <= $blogs->lastPage(); $i++)
+        <a href="{{ $blogs->url($i) }}"
+           class="page-btn {{ $blogs->currentPage() == $i ? 'active' : '' }}">
+            {{ $i }}
+        </a>
+    @endfor
+
+    {{-- Next --}}
+    @if ($blogs->hasMorePages())
+        <a href="{{ $blogs->nextPageUrl() }}" class="page-btn nav">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </a>
+    @else
+        <span class="page-btn nav disabled">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </span>
+    @endif
+
+</div>
+@endif
   </div>
 </section>
 
