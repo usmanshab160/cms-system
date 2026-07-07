@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\SitemapController;
+
 
 Route::get('/', function () {
     return view('home');
@@ -78,6 +80,9 @@ Route::middleware('auth')->group(function () {
         ->name('blogs.update');
 });
 
+// Site-map
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])
+    ->name('sitemap');
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
