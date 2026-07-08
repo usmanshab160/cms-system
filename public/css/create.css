@@ -1,5 +1,4 @@
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --brand:        #7c5cfc;
@@ -357,6 +356,93 @@
   }
   .img-preview-remove:hover { background: var(--error); }
   .img-preview-remove svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  /* ─── FEATURED IMAGE: MEDIA LIBRARY ADD-ON ─── */
+  .or-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 14px 0; font-size: 0.75rem; color: var(--text-muted);
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .btn-media-library {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--white);
+    border: 1.5px solid var(--brand);
+    color: var(--brand);
+    font-family: var(--font-body); font-weight: 600; font-size: 0.85rem;
+    padding: 11px 16px; border-radius: var(--radius);
+    cursor: pointer; transition: background 0.18s, color 0.18s;
+  }
+  .btn-media-library:hover { background: var(--brand-xlight); }
+  .btn-media-library svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+  .ml-overlay {
+    position: fixed; inset: 0; background: rgba(15,14,23,0.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 999; padding: 20px;
+  }
+  .ml-overlay.open { display: flex; }
+  .ml-modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 760px; max-height: 85vh;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(15,14,23,0.25);
+  }
+  .ml-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+  }
+  .ml-header h3 { font-family: var(--font-head); font-size: 1.02rem; color: var(--text-dark); }
+  .ml-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); line-height: 1; }
+  .ml-search-wrap { padding: 16px 24px 0; }
+  .ml-search {
+    width: 100%; padding: 10px 14px; border-radius: var(--radius);
+    border: 1.5px solid var(--border); font-family: var(--font-body);
+    font-size: 0.85rem; outline: none; transition: border-color 0.2s;
+  }
+  .ml-search:focus { border-color: var(--brand); }
+  .ml-grid {
+    padding: 18px 24px 8px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    overflow-y: auto; flex: 1;
+  }
+  @media (max-width: 680px) { .ml-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .ml-grid { grid-template-columns: 1fr; } }
+  .ml-item { cursor: pointer; text-align: center; }
+  .ml-thumb {
+    position: relative; border-radius: 10px; overflow: hidden;
+    border: 2px solid var(--border); aspect-ratio: 1/1; transition: border-color 0.15s;
+  }
+  .ml-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ml-item.selected .ml-thumb { border-color: var(--brand); }
+  .ml-check {
+    position: absolute; top: 6px; right: 6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--brand); color: #fff;
+    display: none; align-items: center; justify-content: center; font-size: 12px;
+  }
+  .ml-item.selected .ml-check { display: flex; }
+  .ml-filename {
+    font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ml-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .ml-btn {
+    padding: 10px 18px; border-radius: 9px; font-weight: 600; font-size: 0.82rem;
+    cursor: pointer; border: none; font-family: var(--font-body);
+  }
+  .ml-btn.cancel { background: var(--bg); color: var(--text-body); border: 1px solid var(--border); }
+  .ml-btn.select { background: var(--brand); color: #fff; }
+  .ml-btn.select:disabled { background: var(--brand-mid); opacity: 0.5; cursor: not-allowed; }
+  .ml-btn.select:not(:disabled):hover { background: var(--brand-dark); }
+
+  /* Multi-select count label used by the Gallery Media Library modal (footer stays flex-end, this pushes to the left) */
+  .ml-selected-count { margin-right: auto; font-size: 0.78rem; color: var(--text-muted); align-self: center; }
 
   /* ─── VIDEO UPLOAD ─── */
   .video-tabs {

@@ -73,7 +73,7 @@ Swal.fire({
                     <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
                   </span>
                   <input type="text" id="title" name="title" placeholder="e.g. 10 Tips for Better Content Strategy" maxlength="100"
-  oninput="updateCharCount('title','title-count',100); autoSlug();"/>
+                    oninput="updateCharCount('title','title-count',100); autoSlug();"/>
                   {{-- <input type="text" id="title" name="title" placeholder="e.g. 10 Tips for Better Content Strategy" maxlength="100" oninput="updateCharCount('title','title-count',100)"/> --}}
                 </div>
                 <div class="char-counter" id="title-count">0 / 100</div>
@@ -166,6 +166,9 @@ Swal.fire({
                 </button>
               </div>
 
+              {{-- ═══════════════ Upload Feature Image Section ═══════════════ --}}
+
+              {{-- OPTION 1: Upload New Image (existing upload zone — unchanged behavior) --}}
               <div class="upload-zone" id="uploadZone">
                 <input type="file" name="featured_image" accept="image/*" onchange="previewImage(event)"/>
                 <div class="upload-icon">
@@ -175,6 +178,36 @@ Swal.fire({
                 <div class="upload-sub"><span>Click to browse</span> or drag & drop</div>
                 <div class="upload-meta">PNG, JPG, WebP · Max 5 MB · Recommended 1200×630 px</div>
               </div>
+
+              {{-- Selected media id (uploaded OR chosen from library) — backend reads this --}}
+              <input type="hidden" name="featured_media_id" id="featuredMediaId" value="">
+
+              {{-- OPTION 2: Choose From Media Library --}}
+              <div class="or-divider">or</div>
+              <button type="button" class="btn-media-library" onclick="openMediaLibrary()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l4-4 4 4 6-6 4 4"/></svg>
+                Choose From Media Library
+              </button>
+
+              {{-- Media Library Modal --}}
+              <div class="ml-overlay" id="mlOverlay">
+                <div class="ml-modal">
+                  <div class="ml-header">
+                    <h3>Media Library</h3>
+                    <button type="button" class="ml-close" onclick="closeMediaLibrary()">✕</button>
+                  </div>
+                  <div class="ml-search-wrap">
+                    <input type="text" class="ml-search" id="mlSearch" placeholder="Search images..." oninput="filterMediaGrid()">
+                  </div>
+                  <div class="ml-grid" id="mlGrid"></div>
+                  <div class="ml-footer">
+                    <button type="button" class="ml-btn cancel" onclick="closeMediaLibrary()">Cancel</button>
+                    <button type="button" class="ml-btn select" id="mlSelectBtn" disabled onclick="confirmMediaSelection()">Select Image</button>
+                  </div>
+                </div>
+              </div>
+
+              {{-- ═══════════════ End Upload Feature Image Section ═══════════════ --}}
 
               <!-- Alt text -->
               <div class="field">
@@ -249,6 +282,34 @@ Swal.fire({
                   <span>Add</span>
                 </label>
               </div>
+
+              {{-- ═══════════════ Gallery: Choose From Media Library (add-on) ═══════════════ --}}
+              <div class="or-divider">or</div>
+              <button type="button" class="btn-media-library" onclick="openGalleryMediaLibrary()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l4-4 4 4 6-6 4 4"/></svg>
+                Choose From Media Library
+              </button>
+
+              {{-- Gallery Media Library Modal — reuses the same .ml-* modal component used by Featured Image --}}
+              <div class="ml-overlay" id="glMlOverlay">
+                <div class="ml-modal">
+                  <div class="ml-header">
+                    <h3>Media Library</h3>
+                    <button type="button" class="ml-close" onclick="closeGalleryMediaLibrary()">✕</button>
+                  </div>
+                  <div class="ml-search-wrap">
+                    <input type="text" class="ml-search" id="glMlSearch" placeholder="Search images..." oninput="filterGalleryMediaGrid()">
+                  </div>
+                  <div class="ml-grid" id="glMlGrid"></div>
+                  <div class="ml-footer">
+                    <span class="ml-selected-count" id="glMlSelectedCount">0 selected</span>
+                    <button type="button" class="ml-btn cancel" onclick="closeGalleryMediaLibrary()">Cancel</button>
+                    <button type="button" class="ml-btn select" id="glMlSelectBtn" disabled onclick="confirmGallerySelection()">Add Selected Images</button>
+                  </div>
+                </div>
+              </div>
+              {{-- ═══════════════ End Gallery: Media Library add-on ═══════════════ --}}
+
             </div>
           </div>
 

@@ -1,6 +1,3 @@
-// ⛔ YEH LINE FILE KE SHURU SE DELETE KARO (yeh .js file mein invalid hai):
-// <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
 (() => {
 
     let editorInstance = null;
@@ -79,7 +76,7 @@
     };
 
 
-    /* ───────────────── Featured Image ───────────────── */
+    /* ───────────────── Featured Image (upload) ───────────────── */
     window.previewImage = function (event) {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -87,6 +84,7 @@
         const img = document.getElementById('imgPreview');
         const wrap = document.getElementById('imgPreviewWrap');
         const uploadZone = document.getElementById('uploadZone');
+        const mediaIdInput = document.getElementById('featuredMediaId');
         const url = URL.createObjectURL(file);
 
         if (img) {
@@ -95,6 +93,7 @@
         }
         if (wrap) wrap.classList.add('show');
         if (uploadZone) uploadZone.style.display = 'none';
+        if (mediaIdInput) mediaIdInput.value = ''; // fresh upload — no media id yet, backend will assign one
 
         hasImage = true;
         updateSeo();
@@ -106,15 +105,184 @@
         const wrap = document.getElementById('imgPreviewWrap');
         const uploadZone = document.getElementById('uploadZone');
         const fileInput = uploadZone?.querySelector('input[type="file"]');
+        const mediaIdInput = document.getElementById('featuredMediaId');
 
         if (img) img.src = '';
         if (wrap) wrap.classList.remove('show');
         if (uploadZone) uploadZone.style.display = '';
         if (fileInput) fileInput.value = ''; // reset so backend doesn't get a stale file
+        if (mediaIdInput) mediaIdInput.value = '';
 
         hasImage = false;
         updateSeo();
         updateChecklist();
+    };
+
+
+    /* ───────────────── Featured Image: Media Library (dummy data) ───────────────── */
+    const mediaLibraryItems = [
+        { id: 1, url: 'https://picsum.photos/seed/cms1/300/300', filename: 'hero-banner.jpg' },
+        { id: 2, url: 'https://picsum.photos/seed/cms2/300/300', filename: 'team-photo.png' },
+        { id: 3, url: 'https://picsum.photos/seed/cms3/300/300', filename: 'blog-cover-ai.jpg' },
+        { id: 4, url: 'https://picsum.photos/seed/cms4/300/300', filename: 'product-shot.webp' },
+        { id: 5, url: 'https://picsum.photos/seed/cms5/300/300', filename: 'office-space.jpg' },
+        { id: 6, url: 'https://picsum.photos/seed/cms6/300/300', filename: 'conference-2025.png' },
+        { id: 7, url: 'https://picsum.photos/seed/cms7/300/300', filename: 'writer-desk.jpg' },
+        { id: 8, url: 'https://picsum.photos/seed/cms8/300/300', filename: 'laptop-code.jpg' },
+    ];
+    let selectedLibraryId = null;
+
+    function renderMediaGrid(items) {
+        const grid = document.getElementById('mlGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'ml-item' + (selectedLibraryId === item.id ? ' selected' : '');
+            el.dataset.id = item.id;
+            el.addEventListener('click', () => selectLibraryItem(item.id));
+            el.innerHTML = `
+                <div class="ml-thumb">
+                    <img src="${item.url}" alt="${item.filename}">
+                    <div class="ml-check">✓</div>
+                </div>
+                <div class="ml-filename">${item.filename}</div>
+            `;
+            grid.appendChild(el);
+        });
+    }
+
+    function selectLibraryItem(id) {
+        selectedLibraryId = id;
+        document.querySelectorAll('.ml-item').forEach(el => {
+            el.classList.toggle('selected', parseInt(el.dataset.id) === id);
+        });
+        const selectBtn = document.getElementById('mlSelectBtn');
+        if (selectBtn) selectBtn.disabled = false;
+    }
+
+    window.filterMediaGrid = function () {
+        const q = document.getElementById('mlSearch')?.value.toLowerCase() || '';
+        renderMediaGrid(mediaLibraryItems.filter(i => i.filename.toLowerCase().includes(q)));
+    };
+
+    window.openMediaLibrary = function () {
+        selectedLibraryId = null;
+        const search = document.getElementById('mlSearch');
+        if (search) search.value = '';
+        const selectBtn = document.getElementById('mlSelectBtn');
+        if (selectBtn) selectBtn.disabled = true;
+        renderMediaGrid(mediaLibraryItems);
+        document.getElementById('mlOverlay')?.classList.add('open');
+    };
+
+    window.closeMediaLibrary = function () {
+        document.getElementById('mlOverlay')?.classList.remove('open');
+    };
+
+    window.confirmMediaSelection = function () {
+        const item = mediaLibraryItems.find(i => i.id === selectedLibraryId);
+        if (!item) return;
+
+        // Reuses the SAME preview area/behavior as manual upload (imgPreviewWrap)
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const mediaIdInput = document.getElementById('featuredMediaId');
+
+        if (img) img.src = item.url;
+        if (wrap) wrap.classList.add('show');
+        if (uploadZone) uploadZone.style.display = 'none';
+        if (mediaIdInput) mediaIdInput.value = item.id;
+
+        hasImage = true;
+        updateSeo();
+        updateChecklist();
+        closeMediaLibrary();
+    };
+
+
+    /* ───────────────── Gallery: Media Library (multi-select, reuses same dummy data) ───────────────── */
+    let gallerySelectedIds = [];
+
+    function renderGalleryMediaGrid(items) {
+        const grid = document.getElementById('glMlGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'ml-item' + (gallerySelectedIds.includes(item.id) ? ' selected' : '');
+            el.dataset.id = item.id;
+            el.addEventListener('click', () => toggleGalleryLibraryItem(item.id));
+            el.innerHTML = `
+                <div class="ml-thumb">
+                    <img src="${item.url}" alt="${item.filename}">
+                    <div class="ml-check">✓</div>
+                </div>
+                <div class="ml-filename">${item.filename}</div>
+            `;
+            grid.appendChild(el);
+        });
+    }
+
+    function toggleGalleryLibraryItem(id) {
+        const idx = gallerySelectedIds.indexOf(id);
+        if (idx === -1) gallerySelectedIds.push(id);
+        else gallerySelectedIds.splice(idx, 1);
+
+        document.querySelectorAll('#glMlGrid .ml-item').forEach(el => {
+            el.classList.toggle('selected', gallerySelectedIds.includes(parseInt(el.dataset.id, 10)));
+        });
+
+        const countLabel = document.getElementById('glMlSelectedCount');
+        if (countLabel) countLabel.textContent = `${gallerySelectedIds.length} selected`;
+
+        const selectBtn = document.getElementById('glMlSelectBtn');
+        if (selectBtn) selectBtn.disabled = gallerySelectedIds.length === 0;
+    }
+
+    window.filterGalleryMediaGrid = function () {
+        const q = document.getElementById('glMlSearch')?.value.toLowerCase() || '';
+        renderGalleryMediaGrid(mediaLibraryItems.filter(i => i.filename.toLowerCase().includes(q)));
+    };
+
+    window.openGalleryMediaLibrary = function () {
+        gallerySelectedIds = [];
+        const search = document.getElementById('glMlSearch');
+        if (search) search.value = '';
+        const selectBtn = document.getElementById('glMlSelectBtn');
+        if (selectBtn) selectBtn.disabled = true;
+        const countLabel = document.getElementById('glMlSelectedCount');
+        if (countLabel) countLabel.textContent = '0 selected';
+        renderGalleryMediaGrid(mediaLibraryItems);
+        document.getElementById('glMlOverlay')?.classList.add('open');
+    };
+
+    window.closeGalleryMediaLibrary = function () {
+        document.getElementById('glMlOverlay')?.classList.remove('open');
+    };
+
+    window.confirmGallerySelection = function () {
+        const grid = document.getElementById('galleryGrid');
+        if (!grid || gallerySelectedIds.length === 0) return;
+
+        const selectedItems = mediaLibraryItems.filter(i => gallerySelectedIds.includes(i.id));
+
+        selectedItems.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'gallery-item';
+            el.innerHTML = `
+                <img src="${item.url}" alt="${item.filename}">
+                <button type="button" class="gallery-item-remove">×</button>
+                <input type="hidden" name="gallery_media_ids[]" value="${item.id}">
+            `;
+            // TODO (Laravel): backend should merge gallery_media_ids[] (library picks)
+            // with gallery[] (fresh uploads) when saving the post's gallery relation.
+            el.querySelector('.gallery-item-remove').addEventListener('click', () => el.remove());
+            grid.insertBefore(el, grid.lastElementChild); // keep the "Add" tile last
+        });
+
+        closeGalleryMediaLibrary();
     };
 
 
