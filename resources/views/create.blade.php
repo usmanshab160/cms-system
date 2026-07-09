@@ -860,6 +860,13 @@ Swal.fire({
         const selectedItems = mediaLibraryItems.filter(i => gallerySelectedIds.includes(i.id));
 
         selectedItems.forEach(item => {
+          const alreadyExists = grid.querySelector(
+        `input[value="${item.id}"]`
+    );
+
+    if (alreadyExists) {
+        return;
+    }
             const el = document.createElement('div');
             el.className = 'gallery-item';
             el.innerHTML = `
