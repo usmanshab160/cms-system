@@ -44,7 +44,7 @@
     <script src="{{ asset('js/header.js') }}"></script>
     <script src="{{ asset('js/home.js') }}"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script src="{{ asset('js/create.js') }}"></script>
+    {{-- <script src="{{ asset('js/create.js') }}"></script> --}}
     <script src="{{ asset('js/pricing.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>

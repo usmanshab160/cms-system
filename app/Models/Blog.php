@@ -40,4 +40,12 @@ class Blog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+ * Featured Image
+ */
+public function featuredMedia()
+{
+    return $this->belongsTo(Media::class, 'featured_media_id');
+}
 }

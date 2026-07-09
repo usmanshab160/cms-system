@@ -6,7 +6,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogShowController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\SitemapController;
-
+use App\Http\Controllers\MediaController;
 
 Route::get('/', function () {
     return view('home');
@@ -25,14 +25,21 @@ Route::get('/pricing', function () {
     return view('pricing');
 });
 
-Route::get('/blog-create', function () {
-    return view('create');
-})->name('blog.create');
+// Route::get('/blog-create', function () {
+//     return view('create');
+// })->name('blog.create');
+
+// Route::get('/blog-create', [BlogController::class, 'create'])
+//     ->name('blog.create');
 
 // Route::get('/create', function () {
 //     return view('create');
 // })->name('blog.create');
 
+Route::get('/blog-create', [MediaController::class, 'index'])
+    ->name('blog.create');
+
+    
 Route::post('/blog-create/store', [BlogController::class, 'store'])
     ->name('blog.store');
 Route::get('/blogs', [BlogShowController::class, 'blogs']) ->name('blogs');
