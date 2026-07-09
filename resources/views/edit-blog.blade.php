@@ -136,52 +136,144 @@ Swal.fire({
             </div>
           </div>
 
-          <!-- CARD 2: Featured Image -->
-          <div class="form-card">
-            <div class="form-card-header">
-              <div class="form-card-icon">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              </div>
-              <div>
-                <div class="form-card-title">Featured Image</div>
-                <div class="form-card-sub">Main thumbnail shown in blog listing</div>
-              </div>
-            </div>
-            <div class="form-card-body">
+          {{-- Feature Image --}}
+          {{-- ═══════════════ Upload Feature Image Section ═══════════════ --}}
 
-              <div class="img-preview-wrap" id="imgPreviewWrap">
-                @if($blog->featured_image)
-                <img id="imgPreview" class="img-preview" src="{{ asset('storage/'.$blog->featured_image) }}" alt="Preview"/>
-                @endif
-                <button type="button" class="img-preview-remove" onclick="clearImage()">
-                  <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-              </div>
+{{-- Featured Image Preview --}}
+<div id="imgPreviewWrap"
+     class="{{ $blog->featured_image ? 'show' : '' }}">
 
-              <div class="upload-zone" id="uploadZone">
-                <input type="file" name="featured_image" accept="image/*" onchange="previewImage(event)"/>
-                <div class="upload-icon">
-                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </div>
-                <div class="upload-title">Drop your image here</div>
-                <div class="upload-sub"><span>Click to browse</span> or drag & drop</div>
-                <div class="upload-meta">PNG, JPG, WebP · Max 5 MB · Recommended 1200×630 px</div>
-              </div>
+    <img
+        id="imgPreview"
+        src="{{ $blog->featured_image ? asset('storage/' . $blog->featured_image) : '' }}"
+        alt="Featured Image Preview">
 
-              <!-- Alt text -->
-              <div class="field">
-                <label for="img_alt">Image Alt Text</label>
-                <div class="input-wrap">
-                  <span class="input-icon">
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  </span>
-                  <input type="text" id="img_alt" name="img_alt"  value="{{ old('img_alt', $blog->img_alt) }}" placeholder="Describe the image for accessibility…"/>
-                </div>
-              </div>
+    <button type="button"
+            class="gallery-item-remove"
+            onclick="clearImage()">
+        ×
+    </button>
+</div>
 
-            </div>
-          </div>
+{{-- OPTION 1: Upload New Image --}}
+<div class="upload-zone"
+     id="uploadZone"
+     style="{{ $blog->featured_image ? 'display:none;' : '' }}">
 
+    <input
+        type="file"
+        name="featured_image"
+        accept="image/*"
+        onchange="previewImage(event)"/>
+
+    <div class="upload-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+        </svg>
+    </div>
+
+    <div class="upload-title">
+        Drop your image here
+    </div>
+
+    <div class="upload-sub">
+        <span>Click to browse</span> or drag & drop
+    </div>
+
+    <div class="upload-meta">
+        PNG, JPG, WebP · Max 5 MB · Recommended 1200×630 px
+    </div>
+
+</div>
+
+{{-- Hidden Input --}}
+<input
+    type="hidden"
+    name="featured_media_id"
+    id="featuredMediaId"
+    value="{{ old('featured_media_id', $blog->featured_media_id) }}">
+
+<input
+    type="hidden"
+    name="remove_featured_image"
+    id="removeFeaturedImage"
+    value="0">
+
+{{-- OPTION 2: Choose From Media Library --}}
+<div class="or-divider">or</div>
+
+<button
+    type="button"
+    class="btn-media-library"
+    onclick="openMediaLibrary()">
+
+    <svg viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 15l4-4 4 4 6-6 4 4"/>
+    </svg>
+
+    Choose From Media Library
+</button>
+
+{{-- Media Library Modal --}}
+<div class="ml-overlay" id="mlOverlay">
+
+    <div class="ml-modal">
+
+        <div class="ml-header">
+            <h3>Media Library</h3>
+
+            <button
+                type="button"
+                class="ml-close"
+                onclick="closeMediaLibrary()">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="ml-search-wrap">
+
+            <input
+                type="text"
+                class="ml-search"
+                id="mlSearch"
+                placeholder="Search images..."
+                oninput="filterMediaGrid()">
+
+        </div>
+
+        <div class="ml-grid" id="mlGrid"></div>
+
+        <div class="ml-footer">
+
+            <button
+                type="button"
+                class="ml-btn cancel"
+                onclick="closeMediaLibrary()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="ml-btn select"
+                id="mlSelectBtn"
+                disabled
+                onclick="confirmMediaSelection()">
+
+                Select Image
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{{-- ═══════════════ End Upload Feature Image Section ═══════════════ --}}
           <div class="form-card">
     <div class="form-card-header">
         <div class="form-card-icon">
@@ -237,12 +329,52 @@ Swal.fire({
             </div>
             <div class="form-card-body">
               <div class="gallery-grid" id="galleryGrid">
+                                    @foreach($blog->galleries as $gallery)
+                    <div class="gallery-item" data-id="{{ $gallery->id }}">
+                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="Gallery Image">
+
+                        <button
+                            type="button"
+                            class="gallery-item-remove"
+                            onclick="removeExistingGalleryImage(this, {{ $gallery->id }})">
+                            ×
+                        </button>
+                    </div>
+                    @endforeach
                 <label class="gallery-add">
                   <input type="file" name="gallery[]" multiple accept="image/*" onchange="addGalleryImages(event)"/>
                   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   <span>Add</span>
                 </label>
               </div>
+                <div id="removedGalleryImages"></div>
+              {{-- ═══════════════ Gallery: Choose From Media Library (add-on) ═══════════════ --}}
+              <div class="or-divider">or</div>
+              <button type="button" class="btn-media-library" onclick="openGalleryMediaLibrary()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l4-4 4 4 6-6 4 4"/></svg>
+                Choose From Media Library
+              </button>
+
+              {{-- Gallery Media Library Modal — reuses the same .ml-* modal component used by Featured Image --}}
+              <div class="ml-overlay" id="glMlOverlay">
+                <div class="ml-modal">
+                  <div class="ml-header">
+                    <h3>Media Library</h3>
+                    <button type="button" class="ml-close" onclick="closeGalleryMediaLibrary()">✕</button>
+                  </div>
+                  <div class="ml-search-wrap">
+                    <input type="text" class="ml-search" id="glMlSearch" placeholder="Search images..." oninput="filterGalleryMediaGrid()">
+                  </div>
+                  <div class="ml-grid" id="glMlGrid"></div>
+                  <div class="ml-footer">
+                    <span class="ml-selected-count" id="glMlSelectedCount">0 selected</span>
+                    <button type="button" class="ml-btn cancel" onclick="closeGalleryMediaLibrary()">Cancel</button>
+                    <button type="button" class="ml-btn select" id="glMlSelectBtn" disabled onclick="confirmGallerySelection()">Add Selected Images</button>
+                  </div>
+                </div>
+              </div>
+              {{-- ═══════════════ End Gallery: Media Library add-on ═══════════════ --}}
+
             </div>
           </div>
 
@@ -529,4 +661,477 @@ Swal.fire({
   <span id="toastMsg">Draft saved!</span>
 </div>
 
+
+@php
+    // Pre-compute the media library payload here (plain PHP, outside <script>)
+    // so the @json() call inside the script block stays a single simple variable
+    // and never has to parse a nested closure/array chain.
+    $mediaLibraryItemsForJs = $media->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'url' => asset('storage/' . $item->file_path),
+            'filename' => $item->file_name,
+        ];
+    })->values()->toArray();
+@endphp
+
+<script>
+  (() => {
+
+    let editorInstance = null;
+    // let galleryFiles = [];
+let hasImage = {{ $blog->featured_image ? 'true' : 'false' }};
+    /* ───────────────── CKEditor ───────────────── */
+    ClassicEditor.create(document.querySelector('#editor'), {
+        toolbar: [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'bulletedList', 'numberedList', '|',
+            'link', 'blockQuote', 'insertTable', '|',
+            'mediaEmbed', '|',
+            'undo', 'redo'
+        ]
+    })
+    .then(editor => {
+        editorInstance = editor;
+
+        editor.model.document.on('change:data', () => {
+            const text = editor.getData().replace(/<[^>]+>/g, '');
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+            const wordCount = document.getElementById('wordCountBadge');
+            if (wordCount) wordCount.textContent = words + ' word' + (words !== 1 ? 's' : '');
+
+            const readTime = document.getElementById('readTimeCalc');
+            const readInput = document.getElementById('read_time');
+            const mins = Math.max(1, Math.ceil(words / 200));
+            if (readTime) readTime.textContent = `~${mins} min read`;
+            if (readInput) readInput.value = mins;
+
+            updateSeo();
+            updateChecklist();
+        });
+
+        // ✅ CRITICAL FIX: sync CKEditor data into the textarea before form submits
+        const form = document.getElementById('blogForm');
+        if (form) {
+            form.addEventListener('submit', () => {
+                editor.updateSourceElement(); // pushes editor content back into <textarea name="content">
+            });
+        }
+    })
+    .catch(error => console.error('CKEditor Error:', error));
+
+
+    /* ───────────────── Auto Slug ───────────────── */
+    window.autoSlug = function () {
+        const title = document.getElementById('title');
+        const slug = document.getElementById('slug');
+        if (!title || !slug) return;
+        slug.value = title.value
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+    };
+
+
+    /* ───────────────── Char Counter ───────────────── */
+    window.updateCharCount = function (fieldId, counterId, max) {
+        const field = document.getElementById(fieldId);
+        const counter = document.getElementById(counterId);
+        if (!field || !counter) return;
+
+        const len = field.value.length;
+        counter.textContent = `${len} / ${max}`;
+        counter.classList.remove('warn', 'over');
+        if (len > max) counter.classList.add('over');
+        else if (len > max * 0.85) counter.classList.add('warn');
+
+        updateSeo();
+        updateChecklist();
+    };
+
+
+    /* ───────────────── Featured Image (upload) ───────────────── */
+    window.previewImage = function (event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const mediaIdInput = document.getElementById('featuredMediaId');
+        const removeInput = document.getElementById('removeFeaturedImage');
+        const url = URL.createObjectURL(file);
+
+        if (img) {
+            img.src = url;
+            img.onload = () => URL.revokeObjectURL(url);
+        }
+        if (wrap) wrap.classList.add('show');
+        if (uploadZone) uploadZone.style.display = 'none';
+        if (mediaIdInput) mediaIdInput.value = ''; // fresh upload — no media id yet, backend will assign one
+        if (removeInput) removeInput.value = "0";
+        if (removeInput) removeInput.value = "1";
+        hasImage = true;
+        updateSeo();
+        updateChecklist();
+    };
+
+    window.clearImage = function () {
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = uploadZone?.querySelector('input[type="file"]');
+        const mediaIdInput = document.getElementById('featuredMediaId');
+        const removeInput = document.getElementById('removeFeaturedImage');
+
+        if (img) img.src = '';
+        if (wrap) wrap.classList.remove('show');
+        if (uploadZone) uploadZone.style.display = '';
+        if (fileInput) fileInput.value = ''; // reset so backend doesn't get a stale file
+        if (mediaIdInput) mediaIdInput.value = '';
+
+        hasImage = false;
+        updateSeo();
+        updateChecklist();
+    };
+
+
+    /* ───────────────── Featured Image: Media Library (dummy data) ───────────────── */
+    const mediaLibraryItems = @json($mediaLibraryItemsForJs);
+
+    let selectedLibraryId = null;
+
+    function renderMediaGrid(items) {
+        const grid = document.getElementById('mlGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'ml-item' + (selectedLibraryId === item.id ? ' selected' : '');
+            el.dataset.id = item.id;
+            el.addEventListener('click', () => selectLibraryItem(item.id));
+            el.innerHTML = `
+                <div class="ml-thumb">
+                    <img src="${item.url}" alt="${item.filename}">
+                    <div class="ml-check">✓</div>
+                </div>
+                <div class="ml-filename">${item.filename}</div>
+            `;
+            grid.appendChild(el);
+        });
+    }
+
+    function selectLibraryItem(id) {
+        selectedLibraryId = id;
+        document.querySelectorAll('.ml-item').forEach(el => {
+            el.classList.toggle('selected', parseInt(el.dataset.id) === id);
+        });
+        const selectBtn = document.getElementById('mlSelectBtn');
+        if (selectBtn) selectBtn.disabled = false;
+    }
+
+    window.filterMediaGrid = function () {
+        const q = document.getElementById('mlSearch')?.value.toLowerCase() || '';
+        renderMediaGrid(mediaLibraryItems.filter(i => i.filename.toLowerCase().includes(q)));
+    };
+
+    window.openMediaLibrary = function () {
+        selectedLibraryId = null;
+        const search = document.getElementById('mlSearch');
+        if (search) search.value = '';
+        const selectBtn = document.getElementById('mlSelectBtn');
+        if (selectBtn) selectBtn.disabled = true;
+        renderMediaGrid(mediaLibraryItems);
+        document.getElementById('mlOverlay')?.classList.add('open');
+    };
+
+    window.closeMediaLibrary = function () {
+        document.getElementById('mlOverlay')?.classList.remove('open');
+    };
+
+    window.confirmMediaSelection = function () {
+        const item = mediaLibraryItems.find(i => i.id === selectedLibraryId);
+        if (!item) return;
+
+        // Reuses the SAME preview area/behavior as manual upload (imgPreviewWrap)
+        const img = document.getElementById('imgPreview');
+        const wrap = document.getElementById('imgPreviewWrap');
+        const uploadZone = document.getElementById('uploadZone');
+        const mediaIdInput = document.getElementById('featuredMediaId');
+
+        if (img) img.src = item.url;
+        if (wrap) wrap.classList.add('show');
+        if (uploadZone) uploadZone.style.display = 'none';
+        if (mediaIdInput) mediaIdInput.value = item.id;
+        if (removeInput) removeInput.value = "0";
+
+        const fileInput = document.querySelector('input[name="featured_image"]');
+
+       if (fileInput) {
+         fileInput.value = '';
+       }
+
+        hasImage = true;
+        updateSeo();
+        updateChecklist();
+        closeMediaLibrary();
+    };
+
+
+    /* ───────────────── Gallery: Media Library (multi-select, reuses same dummy data) ───────────────── */
+    let gallerySelectedIds = [];
+
+    function renderGalleryMediaGrid(items) {
+        const grid = document.getElementById('glMlGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'ml-item' + (gallerySelectedIds.includes(item.id) ? ' selected' : '');
+            el.dataset.id = item.id;
+            el.addEventListener('click', () => toggleGalleryLibraryItem(item.id));
+            el.innerHTML = `
+                <div class="ml-thumb">
+                    <img src="${item.url}" alt="${item.filename}">
+                    <div class="ml-check">✓</div>
+                </div>
+                <div class="ml-filename">${item.filename}</div>
+            `;
+            grid.appendChild(el);
+        });
+    }
+
+    function toggleGalleryLibraryItem(id) {
+        const idx = gallerySelectedIds.indexOf(id);
+        if (idx === -1) gallerySelectedIds.push(id);
+        else gallerySelectedIds.splice(idx, 1);
+
+        document.querySelectorAll('#glMlGrid .ml-item').forEach(el => {
+            el.classList.toggle('selected', gallerySelectedIds.includes(parseInt(el.dataset.id, 10)));
+        });
+
+        const countLabel = document.getElementById('glMlSelectedCount');
+        if (countLabel) countLabel.textContent = `${gallerySelectedIds.length} selected`;
+
+        const selectBtn = document.getElementById('glMlSelectBtn');
+        if (selectBtn) selectBtn.disabled = gallerySelectedIds.length === 0;
+    }
+
+    window.filterGalleryMediaGrid = function () {
+        const q = document.getElementById('glMlSearch')?.value.toLowerCase() || '';
+        renderGalleryMediaGrid(mediaLibraryItems.filter(i => i.filename.toLowerCase().includes(q)));
+    };
+
+    window.openGalleryMediaLibrary = function () {
+        gallerySelectedIds = [];
+        const search = document.getElementById('glMlSearch');
+        if (search) search.value = '';
+        const selectBtn = document.getElementById('glMlSelectBtn');
+        if (selectBtn) selectBtn.disabled = true;
+        const countLabel = document.getElementById('glMlSelectedCount');
+        if (countLabel) countLabel.textContent = '0 selected';
+        renderGalleryMediaGrid(mediaLibraryItems);
+        document.getElementById('glMlOverlay')?.classList.add('open');
+    };
+
+    window.closeGalleryMediaLibrary = function () {
+        document.getElementById('glMlOverlay')?.classList.remove('open');
+    };
+
+    window.confirmGallerySelection = function () {
+        const grid = document.getElementById('galleryGrid');
+        if (!grid || gallerySelectedIds.length === 0) return;
+
+        const selectedItems = mediaLibraryItems.filter(i => gallerySelectedIds.includes(i.id));
+
+        selectedItems.forEach(item => {
+          const alreadyExists = grid.querySelector(
+        `input[value="${item.id}"]`
+    );
+
+    if (alreadyExists) {
+        return;
+    }
+            const el = document.createElement('div');
+            el.className = 'gallery-item';
+            el.innerHTML = `
+                <img src="${item.url}" alt="${item.filename}">
+                <button type="button" class="gallery-item-remove">×</button>
+                <input type="hidden" name="gallery_media_ids[]" value="${item.id}">
+            `;
+            // TODO (Laravel): backend should merge gallery_media_ids[] (library picks)
+            // with gallery[] (fresh uploads) when saving the post's gallery relation.
+            el.querySelector('.gallery-item-remove').addEventListener('click', () => el.remove());
+            grid.insertBefore(el, grid.lastElementChild); // keep the "Add" tile last
+        });
+
+        closeGalleryMediaLibrary();
+    };
+
+
+    /* ───────────────── Gallery ───────────────── */
+    window.addGalleryImages = function (event) {
+
+    console.log("Before:", event.target.files);
+
+    const files = Array.from(event.target.files || []);
+
+    console.log("Copied:", files);
+
+    const grid = document.getElementById('galleryGrid');
+    if (!grid) return;
+
+    files.forEach(file => {
+
+        const url = URL.createObjectURL(file);
+
+        const item = document.createElement('div');
+
+        item.className = 'gallery-item';
+
+        item.innerHTML =
+        `<img src="${url}" alt="">
+         <button type="button" class="gallery-item-remove">×</button>`;
+
+        item.querySelector('button').addEventListener('click', () => {
+            item.remove();
+            URL.revokeObjectURL(url);
+        });
+
+        grid.insertBefore(item, grid.lastElementChild);
+    });
+
+};
+    /* ───────────────── Video Upload ───────────────── */
+    window.switchVideoTab = function (tab, btn) {
+        document.querySelectorAll('.video-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.video-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('vp-' + tab)?.classList.add('active');
+    };
+
+    window.simulateUpload = function (event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const wrap = document.getElementById('videoProgressWrap');
+        const fill = document.getElementById('videoProgressFill');
+        const label = document.getElementById('videoProgressLabel');
+
+        if (wrap) wrap.classList.add('show');
+
+        let pct = 0;
+        const interval = setInterval(() => {
+            pct += 10;
+            if (fill) fill.style.width = pct + '%';
+            if (label) label.textContent = pct < 100 ? `Uploading… ${pct}%` : 'Upload complete';
+            if (pct >= 100) clearInterval(interval);
+        }, 120);
+    };
+
+
+    /* ───────────────── Status (Draft/Published/Scheduled) ───────────────── */
+    window.setStatus = function (btn, value) {
+        document.querySelectorAll('.status-opt').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+
+        const statusInput = document.getElementById('statusInput');
+        const scheduled = document.getElementById('scheduledField');
+        if (statusInput) statusInput.value = value;
+        if (scheduled) scheduled.style.display = value === 'scheduled' ? '' : 'none';
+    };
+
+
+    /* ───────────────── Save as Draft ───────────────── */
+    window.saveDraft = function () {
+        const statusInput = document.getElementById('statusInput');
+        if (statusInput) statusInput.value = 'draft';
+
+        if (editorInstance) editorInstance.updateSourceElement();
+
+        const form = document.getElementById('blogForm');
+        if (form) form.requestSubmit(); // submits to the SAME backend route, status = draft
+    };
+
+
+    /* ───────────────── SEO Score ───────────────── */
+    function updateSeo() {
+        const title = document.getElementById('title')?.value.length || 0;
+        const desc = document.getElementById('meta_description')?.value.length
+                  || document.getElementById('description')?.value.length || 0;
+
+        const checks = {
+            'seo-title-check': title >= 50 && title <= 60,
+            'seo-desc-check': desc >= 120 && desc <= 160,
+            'seo-img-check': hasImage,
+            'seo-content-check': (editorInstance
+                ? editorInstance.getData().replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length
+                : 0) >= 300
+        };
+
+        let passed = 0;
+        Object.entries(checks).forEach(([id, ok]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('pass', ok);
+            el.classList.toggle('fail', !ok);
+            if (ok) passed++;
+        });
+
+        const score = Math.round((passed / Object.keys(checks).length) * 100);
+        const scoreLabel = document.getElementById('seoScore');
+        const circle = document.getElementById('seoCircle');
+        if (scoreLabel) scoreLabel.textContent = score;
+        if (circle) circle.style.strokeDashoffset = 125.6 - (125.6 * score / 100);
+    }
+    window.updateSeo = updateSeo;
+
+
+    /* ───────────────── Pre-Publish Checklist ───────────────── */
+    function updateChecklist() {
+        const checks = {
+            'check-title': !!document.getElementById('title')?.value.trim(),
+            'check-desc': !!document.getElementById('description')?.value.trim(),
+            'check-img': hasImage,
+            'check-cat': !!document.getElementById('category')?.value,
+            'check-content': (editorInstance
+                ? editorInstance.getData().replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length
+                : 0) > 0
+        };
+
+        Object.entries(checks).forEach(([id, ok]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('pass', ok);
+            el.classList.toggle('fail', !ok);
+        });
+    }
+    window.updateChecklist = updateChecklist;
+
+    // also recalc checklist when category changes
+    document.getElementById('category')?.addEventListener('change', () => {
+        updateSeo();
+        updateChecklist();
+    });
+
+   })();
+
+   function removeExistingGalleryImage(button, galleryId) {
+
+    button.closest('.gallery-item').remove();
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'remove_gallery_images[]';
+    input.value = galleryId;
+
+    document
+        .getElementById('removedGalleryImages')
+        .appendChild(input);
+}
+</script>
 @endsection

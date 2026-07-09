@@ -605,6 +605,33 @@
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast svg { width: 17px; height: 17px; stroke: var(--success); fill: none; stroke-width: 2.5; flex-shrink: 0; }
 
+
+  /* EDIT BLOG CSS*/
+
+#imgPreviewWrap {
+    position: relative;
+    display: inline-block;
+}
+
+#imgPreviewWrap button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    width: 28px;
+    height: 28px;
+
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.7);
+    color: #fff;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
   /* ─── RESPONSIVE ─── */
   @media (max-width: 1100px) {
     .form-layout { flex-direction: column; }

@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user-profile', [UserProfileController::class, 'profile'])->name('user.profile');
 
     Route::delete('/articles/{article}', [UserProfileController::class, 'destroyArticle'])
-    ->name('articles.destroy');
+        ->name('articles.destroy');
 
     Route::get('/blogs/{id}/edit', [UserProfileController::class, 'editBlog'])
         ->name('blogs.edit');

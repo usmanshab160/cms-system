@@ -594,7 +594,7 @@ Swal.fire({
   (() => {
 
     let editorInstance = null;
-    let galleryFiles = [];
+    // let galleryFiles = [];
     let hasImage = false;
 
     /* ───────────────── CKEditor ───────────────── */

@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Blog;
+use App\Models\Media;
 class UserProfileController extends Controller
 {
     //  ---------- Blog Coutner like total published, scheduled, draft -----------
@@ -146,18 +147,33 @@ class UserProfileController extends Controller
 
 // Blog Edit and Update Logic
 
-public function editBlog($id)
-    {
-        $blog = Blog::with('galleries')
-                    ->where('user_id', Auth::id())
-                    ->findOrFail($id);
+// public function editBlog($id)
+//     {
+//         $blog = Blog::with('galleries')
+//                     ->where('user_id', Auth::id())
+//                     ->findOrFail($id);
 
-        return view('edit-blog', compact('blog'));
-    }
+//         return view('edit-blog', compact('blog'));
+//     }
+
+public function editBlog($id)
+{
+    $blog = Blog::with('galleries')
+                ->where('user_id', Auth::id())
+                ->findOrFail($id);
+
+    $media = Media::latest()->get();
+
+    return view('edit-blog', compact(
+        'blog',
+        'media'
+    ));
+}
 
     // Update Blog
     public function updateBlog(Request $request, $id)
     {
+        // dd($request->all(), $request->file('gallery'));
         //  dd('Controller Hit');
         // dd($request->all());
         $blog = Blog::with('galleries')
@@ -173,6 +189,8 @@ public function editBlog($id)
             'read_time' => 'nullable|string|max:50',
 
             'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'featured_media_id' => 'nullable|exists:media,id',
+            'remove_featured_image' => 'nullable|boolean',
             'img_alt' => 'nullable|string|max:255',
 
             'content' => 'required|string',
@@ -188,31 +206,63 @@ public function editBlog($id)
             'status' => 'required|in:draft,published,scheduled',
             'scheduled_at' => 'nullable|date',
 
-            'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'remove_gallery_images' => 'nullable|array',
+            'remove_gallery_images.*' => 'exists:blog_galleries,id',
         ]);
         // dd('Validation Passed', $validated);
         // dd($validated);
 
-        // Featured Image Update
-        if ($request->hasFile('featured_image')) {
+        // Remove Featured Image
+         if ($request->remove_featured_image) {
 
-            // Old image delete
-            if ($blog->featured_image && Storage::disk('public')->exists($blog->featured_image)) {
-                Storage::disk('public')->delete($blog->featured_image);
-            }
-
-            $validated['featured_image'] = $request
-                ->file('featured_image')
-                ->store('blogs/featured-images', 'public');
+         if ($blog->featured_image && Storage::disk('public')->exists($blog->featured_image)) {
+        Storage::disk('public')->delete($blog->featured_image);
         }
 
+        $validated['featured_image'] = null;
+        $validated['featured_media_id'] = null;
+        }
+
+    // Upload New Featured Image
+        elseif ($request->hasFile('featured_image')) {
+
+    if ($blog->featured_image && Storage::disk('public')->exists($blog->featured_image)) {
+        Storage::disk('public')->delete($blog->featured_image);
+    }
+
+    $path = $request->file('featured_image')
+        ->store('blogs/featured-images', 'public');
+
+    $validated['featured_image'] = $path;
+    $validated['featured_media_id'] = null;
+    }
+
+    // Select From Media Library
+    elseif ($request->filled('featured_media_id')) {
+
+    $media = Media::find($request->featured_media_id);
+
+    if ($media) {
+        $validated['featured_media_id'] = $media->id;
+        $validated['featured_image'] = $media->file_path;
+    }
+    }
+    // Gallery delete
+
+    if ($request->filled('remove_gallery_images')) {
+
+    $blog->galleries()
+        ->whereIn('id', $request->remove_gallery_images)
+        ->delete();
+    }
         $blog->update($validated);
 
 
         // Gallery Images (sirf new images add hongi)
-        if ($request->hasFile('gallery_images')) {
+        if ($request->hasFile('gallery')) {
 
-            foreach ($request->file('gallery_images') as $image) {
+             foreach ($request->file('gallery') as $image) {
 
                 $path = $image->store('blogs/gallery', 'public');
 
