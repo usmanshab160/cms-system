@@ -173,9 +173,7 @@ public function editBlog($id)
     // Update Blog
     public function updateBlog(Request $request, $id)
     {
-        // dd($request->all(), $request->file('gallery'));
-        //  dd('Controller Hit');
-        // dd($request->all());
+
         $blog = Blog::with('galleries')
                     ->where('user_id', Auth::id())
                     ->findOrFail($id);
@@ -207,6 +205,11 @@ public function editBlog($id)
             'scheduled_at' => 'nullable|date',
 
             'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            // ✅ Media Library se select ki hui gallery images (naya add kiya gaya rule)
+            'gallery_media_ids' => 'nullable|array',
+            'gallery_media_ids.*' => 'exists:media,id',
+
             'remove_gallery_images' => 'nullable|array',
             'remove_gallery_images.*' => 'exists:blog_galleries,id',
         ]);
@@ -259,7 +262,7 @@ public function editBlog($id)
         $blog->update($validated);
 
 
-        // Gallery Images (sirf new images add hongi)
+        // Gallery Images (sirf new/fresh uploads)
         if ($request->hasFile('gallery')) {
 
              foreach ($request->file('gallery') as $image) {
@@ -269,6 +272,21 @@ public function editBlog($id)
                 $blog->galleries()->create([
                     'image' => $path
                 ]);
+            }
+        }
+
+        // ✅ Gallery Images (Media Library se select ki hui — ab yahan save ho rahi hain)
+        if ($request->filled('gallery_media_ids')) {
+
+            foreach ($request->gallery_media_ids as $mediaId) {
+
+                $media = Media::find($mediaId);
+
+                if ($media) {
+                    $blog->galleries()->create([
+                        'image' => $media->file_path
+                    ]);
+                }
             }
         }
 

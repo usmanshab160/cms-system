@@ -88,7 +88,8 @@ Swal.fire({
                   <span class="input-icon">
                     <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                   </span>
-                  <input type="text" id="slug" name="slug" value="{{ old('slug', $blog->slug) }}"> placeholder="10-tips-for-better-content-strategy"/>
+                  <input type="text" id="slug" name="slug" value="{{ old('slug', $blog->slug) }}" placeholder="10-tips-for-better-content-strategy"/>
+                  {{-- <input type="text" id="slug" name="slug" value="{{ old('slug', $blog->slug) }}"> placeholder="10-tips-for-better-content-strategy"/> --}}
                 </div>
               </div>
 
@@ -329,6 +330,7 @@ Swal.fire({
             </div>
             <div class="form-card-body">
               <div class="gallery-grid" id="galleryGrid">
+               
                                     @foreach($blog->galleries as $gallery)
                     <div class="gallery-item" data-id="{{ $gallery->id }}">
                         <img src="{{ asset('storage/' . $gallery->image) }}" alt="Gallery Image">
@@ -341,8 +343,28 @@ Swal.fire({
                         </button>
                     </div>
                     @endforeach
+                    {{-- <label class="gallery-add">
+
+    <input
+        id="galleryInput"
+        type="file"
+        name="gallery[]"
+        multiple
+        accept="image/*">
+
+    <svg>...</svg>
+    <span>Add</span>
+
+</label> --}}
                 <label class="gallery-add">
-                  <input type="file" name="gallery[]" multiple accept="image/*" onchange="addGalleryImages(event)"/>
+                  {{-- <input type="file" name="gallery[]" multiple accept="image/*" onchange="addGalleryImages(event)"/> --}}
+                  <input
+    id="galleryInput"
+    type="file"
+    name="gallery[]"
+    multiple
+    accept="image/*"
+    onchange="addGalleryImages(event)">
                   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   <span>Add</span>
                 </label>
@@ -973,28 +995,20 @@ let hasImage = {{ $blog->featured_image ? 'true' : 'false' }};
 
 
     /* ───────────────── Gallery ───────────────── */
-    window.addGalleryImages = function (event) {
-
-    console.log("Before:", event.target.files);
-
+window.addGalleryImages = function (event) {
     const files = Array.from(event.target.files || []);
-
-    console.log("Copied:", files);
-
     const grid = document.getElementById('galleryGrid');
     if (!grid) return;
 
     files.forEach(file => {
-
         const url = URL.createObjectURL(file);
 
         const item = document.createElement('div');
-
         item.className = 'gallery-item';
-
-        item.innerHTML =
-        `<img src="${url}" alt="">
-         <button type="button" class="gallery-item-remove">×</button>`;
+        item.innerHTML = `
+            <img src="${url}" alt="">
+            <button type="button" class="gallery-item-remove">×</button>
+        `;
 
         item.querySelector('button').addEventListener('click', () => {
             item.remove();
@@ -1003,7 +1017,6 @@ let hasImage = {{ $blog->featured_image ? 'true' : 'false' }};
 
         grid.insertBefore(item, grid.lastElementChild);
     });
-
 };
     /* ───────────────── Video Upload ───────────────── */
     window.switchVideoTab = function (tab, btn) {
@@ -1133,5 +1146,7 @@ let hasImage = {{ $blog->featured_image ? 'true' : 'false' }};
         .getElementById('removedGalleryImages')
         .appendChild(input);
 }
+
+
 </script>
 @endsection
