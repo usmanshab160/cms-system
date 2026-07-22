@@ -8,6 +8,9 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Blog;
 use App\Models\Media;
+use App\Models\BlogRevision;
+use Illuminate\Support\Facades\DB;
+
 class UserProfileController extends Controller
 {
     //  ---------- Blog Coutner like total published, scheduled, draft -----------
@@ -144,18 +147,6 @@ class UserProfileController extends Controller
     return redirect()->back()->with('success', 'Article deleted successfully.');
 }
 
-
-// Blog Edit and Update Logic
-
-// public function editBlog($id)
-//     {
-//         $blog = Blog::with('galleries')
-//                     ->where('user_id', Auth::id())
-//                     ->findOrFail($id);
-
-//         return view('edit-blog', compact('blog'));
-//     }
-
 public function editBlog($id)
 {
     $blog = Blog::with('galleries')
@@ -213,8 +204,41 @@ public function editBlog($id)
             'remove_gallery_images' => 'nullable|array',
             'remove_gallery_images.*' => 'exists:blog_galleries,id',
         ]);
-        // dd('Validation Passed', $validated);
-        // dd($validated);
+
+        // Save current blog as revision BEFORE updating
+BlogRevision::create([
+
+    'blog_id'            => $blog->id,
+    'user_id'            => auth()->id(),
+
+    'title'              => $blog->title,
+    'slug'               => $blog->slug,
+    'description'        => $blog->description,
+    'category'           => $blog->category,
+    'read_time'          => $blog->read_time,
+
+    'featured_image'     => $blog->featured_image,
+    'featured_media_id'  => $blog->featured_media_id,
+    'img_alt'            => $blog->img_alt,
+
+    'content'            => $blog->content,
+
+    'video'              => $blog->video,
+    'video_url'          => $blog->video_url,
+
+    'meta_title'         => $blog->meta_title,
+    'meta_description'   => $blog->meta_description,
+    'focus_keyword'      => $blog->focus_keyword,
+
+    'status'             => $blog->status,
+    'scheduled_at'       => $blog->scheduled_at,
+
+    'author_name'        => $blog->author_name,
+
+    'revision_number'    => ($blog->revisions()->max('revision_number') ?? 0) + 1,
+
+]);
+
 
         // Remove Featured Image
          if ($request->remove_featured_image) {

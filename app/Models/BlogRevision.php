@@ -1,57 +1,66 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-class Blog extends Model
+
+class BlogRevision extends Model
 {
     protected $fillable = [
+
+        'blog_id',
         'user_id',
-        'author_name',
+
         'title',
         'slug',
         'description',
         'category',
         'read_time',
+
         'featured_image',
+        'featured_media_id',
         'img_alt',
+
         'content',
+
         'video',
         'video_url',
+
         'meta_title',
         'meta_description',
         'focus_keyword',
+
         'status',
         'scheduled_at',
+
+        'author_name',
+
+        'revision_number',
+
     ];
 
-    protected $casts = [
-        'scheduled_at' => 'datetime',
-    ];
-
-    // One Blog has many gallery images
-    public function galleries()
+    /**
+     * Revision belongs to a Blog
+     */
+    public function blog()
     {
-        return $this->hasMany(BlogGallery::class);
+        return $this->belongsTo(Blog::class);
     }
 
-    // One Blog belongs to one User
+    /**
+     * User who created this revision
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
     /**
- * Featured Image
- */
-public function featuredMedia()
-{
-    return $this->belongsTo(Media::class, 'featured_media_id');
-}
-
-public function revisions()
-{
-    return $this->hasMany(BlogRevision::class);
-}
+     * Featured media of this revision
+     */
+    public function featuredMedia()
+    {
+        return $this->belongsTo(Media::class, 'featured_media_id');
+    }
 
 }
